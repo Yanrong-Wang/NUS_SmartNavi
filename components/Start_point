@@ -1,0 +1,19 @@
+import React, { useState } from "react";
+const STOPS = [
+  "Central Library",
+  "Yusof Ishak House",
+  "LT27",
+  "S17",
+  "Kent Ridge MRT",
+  "Opp Kent Ridge MRT"
+  "University Town",
+  "PGP Foyer"
+  "Prince Georgia's Park"
+  "Biz2",
+  "COM3",
+];
+export default function App() {
+    const [from, setFrom] = useState("");
+    const [to, setTo] = useState("");
+    const [error, setError] = useState("");
+    
