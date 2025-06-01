@@ -16,4 +16,15 @@ export default function RouteSearch({ from, to, disabled }) {
       return fromIdx !== -1 && toIdx !== -1 && fromIdx < toIdx;
     });
 
-    
+    if (found.length > 0) {
+      setResult(
+        `Recommended Bus Route${found.length > 1 ? "s" : ""}: ${found
+          .map(r => r.routeName)
+          .join(", ")}`
+      );
+    } else {
+      setResult("No direct bus route found for the selected stops.");
+    }
+  }
+
+  
