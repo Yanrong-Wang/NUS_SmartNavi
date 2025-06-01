@@ -42,7 +42,7 @@ export default function App() {
   }
 
   return (
-  <div style={{ padding: 40, maxWidth: 420 }}>
+  <div style={{ padding: 30 }}>
     <h2>NUS SmartNavi: Pick Route</h2>
     <div style={{ marginBottom: 20 }}>
       <label>
