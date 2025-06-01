@@ -42,50 +42,44 @@ export default function App() {
   }
 
   return (
-    <div style={{ padding: 40, maxWidth: 420 }}>
-      <h2>NUS SmartNavi: Pick Route</h2>
-
-      <div style={{ marginBottom: 20 }}>
-        <label>
-          Origin:
-          <select value={from} onChange={handleFromChange}>
-            <option value="">--Select--</option>
-            {STOPS.map(stop =>
-              stop !== to ? (
-                <option key={stop} value={stop}>
-                  {stop}
-                </option>
-              ) : null
-            )}
-          </select>
-        </label>
-      </div>
-
-      <div style={{ marginBottom: 20 }}>
-        <label>
-          Destination:
-          <select value={to} onChange={handleToChange}>
-            <option value="">--Select--</option>
-            {STOPS.map(stop =>
-              stop !== from ? (
-                <option key={stop} value={stop}>
-                  {stop}
-                </option>
-              ) : null
-            )}
-          </select>
-        </label>
-      </div>
-
-      {/* Display Error */}
-      {error && (
-        <div style={{ color: "red", marginTop: 10 }}>
-          {error}
-        </div>
-      )}
-
-      
-      <RouteSearch from={from} to={to} disabled={!!error || !from || !to} />
+  <div style={{ padding: 40, maxWidth: 420 }}>
+    <h2>NUS SmartNavi: Pick Route</h2>
+    <div style={{ marginBottom: 20 }}>
+      <label>
+        Origin:
+        <select value={from} onChange={e => handleFromChange(e.target.value)}>
+          <option value="">--Select--</option>
+          {STOPS.map(stop => (
+            (stop === from || stop !== to) ? (
+              <option key={stop} value={stop}>{stop}</option>
+            ) : null
+          ))}
+        </select>
+      </label>
     </div>
+
+    <div style={{ marginBottom: 20 }}>
+      <label>
+        Destination:
+        <select value={to} onChange={e => handleToChange(e.target.value)}>
+          <option value="">--Select--</option>
+          {STOPS.map(stop => (
+            (stop === to || stop !== from) ? (
+              <option key={stop} value={stop}>{stop}</option>
+            ) : null
+          ))}
+        </select>
+      </label>
+    </div>
+
+    {/* Display Error */}
+    {error && (
+      <div style={{ color: "red", marginTop: 10 }}>
+        {error}
+      </div>
+    )}
+
+    <RouteSearch from={from} to={to} disabled={!!error || !from || !to} />
+  </div>
   );
 }
