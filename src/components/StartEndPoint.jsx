@@ -37,7 +37,7 @@ export default function App() {
 
  return (
     <div style={{ padding: 40, maxWidth: 400 }}>
-      <h2>SmartNavi POC: Pick Route</h2>
+      <h2>NUS SmartNavi: Pick Route</h2>
       <div style={{ marginBottom: 20 }}>
         <label>
           Origin:
