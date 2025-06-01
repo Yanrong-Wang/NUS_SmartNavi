@@ -26,6 +26,15 @@ export default function App() {
     }
   }
 
+    function handleFromChange(e) {
+      setFrom(e.target.value);
+      if (e.target.value === to && e.target.value) {
+        setError("Origin and destination cannot be the same!");
+    } else {
+        setError("");
+    }
+  }
+
  return (
     <div style={{ padding: 40, maxWidth: 400 }}>
       <h2>SmartNavi POC: Pick Route</h2>
