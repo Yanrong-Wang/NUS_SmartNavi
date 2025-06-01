@@ -27,4 +27,26 @@ export default function RouteSearch({ from, to, disabled }) {
     }
   }
 
-  
+  return (
+    <div style={{ marginTop: 28 }}>
+      <button
+        disabled={disabled}
+        onClick={searchRoute}
+        style={{
+          padding: "6px 18px",
+          background: disabled ? "#ccc" : "#1a365d",
+          color: "#fff",
+          border: "none",
+          borderRadius: 4,
+          fontWeight: "bold",
+          cursor: disabled ? "not-allowed" : "pointer",
+        }}
+      >
+        Search
+      </button>
+      <div style={{ minHeight: 32, marginTop: 14, fontSize: "1.08rem" }}>
+        {searched && result}
+      </div>
+    </div>
+  );
+}
