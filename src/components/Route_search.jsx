@@ -37,8 +37,8 @@ export default function RouteSearch({ from, to, disabled }) {
         onClick={searchRoute}
         style={{
           padding: "4px 12px",
-          background: disabled ? "white" : "black",
-          color: "black",
+          background: "black",
+          color: "white",
           border: "none",
           borderRadius: 4,
           fontWeight: "bold",
