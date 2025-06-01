@@ -1,6 +1,23 @@
 import React, { useState } from "react";
-import StopSelector from "./components/Bus_route";
 import RouteSearch from "./components/Route_search";
+import busRoutes from "./components/Bus_route";  
+
+const STOPS = [
+  "Central Library",
+  "Yusof Ishak House",
+  "Univeristy Hall",
+  "Opp University Hall",
+  "LT27",
+  "S17",
+  "Kent Ridge MRT",
+  "Opp Kent Ridge MRT",
+  "University Town",
+  "Prince George's Park Foyer",
+  "Prince George's Park",
+  "Opp HSSML",  
+  "BIZ2",
+  "COM3",
+];
 
 export default function App() {
   const [from, setFrom] = useState("");
@@ -25,17 +42,50 @@ export default function App() {
   }
 
   return (
-    <div style={{ padding: 40, maxWidth: 400 }}>
+    <div style={{ padding: 40, maxWidth: 420 }}>
       <h2>NUS SmartNavi: Pick Route</h2>
-      <StopSelector
-        stops={STOPS}
-        from={from}
-        to={to}
-        setFrom={handleFromChange}
-        setTo={handleToChange}
-        error={error}
-      />
-      <Route_search from={from} to={to} disabled={!!error || !from || !to} />
+
+      <div style={{ marginBottom: 20 }}>
+        <label>
+          Origin:
+          <select value={from} onChange={handleFromChange}>
+            <option value="">--Select--</option>
+            {STOPS.map(stop =>
+              stop !== to ? (
+                <option key={stop} value={stop}>
+                  {stop}
+                </option>
+              ) : null
+            )}
+          </select>
+        </label>
+      </div>
+
+      <div style={{ marginBottom: 20 }}>
+        <label>
+          Destination:
+          <select value={to} onChange={handleToChange}>
+            <option value="">--Select--</option>
+            {STOPS.map(stop =>
+              stop !== from ? (
+                <option key={stop} value={stop}>
+                  {stop}
+                </option>
+              ) : null
+            )}
+          </select>
+        </label>
+      </div>
+
+      {/* Display Error */}
+      {error && (
+        <div style={{ color: "red", marginTop: 10 }}>
+          {error}
+        </div>
+      )}
+
+      
+      <RouteSearch from={from} to={to} disabled={!!error || !from || !to} />
     </div>
   );
-}import StartEndPoint from "./components/StartEndPoint";
+}
