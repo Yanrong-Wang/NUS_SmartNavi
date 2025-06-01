@@ -2,13 +2,16 @@ import React, { useState } from "react";
 const STOPS = [
   "Central Library",
   "Yusof Ishak House",
+  "Univeristy Hall",
+  "Opp University Hall",
   "LT27",
   "S17",
   "Kent Ridge MRT",
   "Opp Kent Ridge MRT",
   "University Town",
-  "PGP Foyer",
-  "Prince Georgia's Park",
+  "Prince George's Park Foyer",
+  "Prince George's Park",
+  "Opp HSSML",  
   "BIZ2",
   "COM3",
 ];
