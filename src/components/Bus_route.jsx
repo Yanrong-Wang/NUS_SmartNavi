@@ -53,3 +53,5 @@ const busRoutes = [
     ],
   },
 ];
+
+export default busRoutes;
