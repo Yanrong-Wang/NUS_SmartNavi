@@ -5,10 +5,10 @@ const STOPS = [
   "LT27",
   "S17",
   "Kent Ridge MRT",
-  "Opp Kent Ridge MRT"
+  "Opp Kent Ridge MRT",
   "University Town",
-  "PGP Foyer"
-  "Prince Georgia's Park"
+  "PGP Foyer",
+  "Prince Georgia's Park",
   "BIZ2",
   "COM3",
 ];
