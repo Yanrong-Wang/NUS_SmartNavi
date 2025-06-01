@@ -8,4 +8,12 @@ export default function RouteSearch({ from, to, disabled }) {
       setResult("Please select both origin and destination, and make sure they are different.");
       return;
     }
+
+    // Search for direct routes
+    const found = busRoutes.filter(route => {
+      const fromIdx = route.stops.indexOf(from);
+      const toIdx = route.stops.indexOf(to);
+      return fromIdx !== -1 && toIdx !== -1 && fromIdx < toIdx;
+    });
+
     
