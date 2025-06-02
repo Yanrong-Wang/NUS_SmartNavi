@@ -12,22 +12,22 @@ export default function RouteSearch({ from, to, disabled }: RouteSearchProps) {
   const [result, setResult] = useState('');
   const [searched, setSearched] = useState(false);
 
-  function searchRoute() {
+  function findRoute() {
     setSearched(true);
     if (!from || !to || from === to) {
       setResult('Please select both origin and destination, and make sure they are different.');
       return;
     }
 
-    const found = busRoutes.filter(route => {
-      const fromIdx = route.stops.indexOf(from);
-      const toIdx = route.stops.indexOf(to);
-      return fromIdx !== -1 && toIdx !== -1 && fromIdx < toIdx;
+    const searchResult = busRoutes.filter(route => {
+      const fromIndex = route.stops.indexOf(from);
+      const toIndex = route.stops.indexOf(to);
+      return fromIndex !== -1 && toIndex !== -1 && fromIndex < toIndex;
     });
 
-    if (found.length > 0) {
+    if (searchResult.length > 0) {
       setResult(
-        `Recommended Bus Route${found.length > 1 ? 's' : ''}: ${found
+        `Recommended Bus Route${searchResult.length > 1 ? 's' : ''}: ${searchResult
           .map(r => r.routeName)
           .join(', ')}`
       );
@@ -38,7 +38,7 @@ export default function RouteSearch({ from, to, disabled }: RouteSearchProps) {
 
   return (
     <View style={styles.container}>
-      <Button title="Search" disabled={disabled} onPress={searchRoute} />
+      <Button title="Search" disabled={disabled} onPress={findRoute} />
       {searched && (
         <Text style={styles.resultText}>{result}</Text>
       )}
@@ -51,9 +51,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   resultText: {
-    minHeight: 32,
-    marginTop: 14,
+    marginTop: 20,
     fontSize: 16,
-    color: '#333',
+    color: 'black',
   },
 });
