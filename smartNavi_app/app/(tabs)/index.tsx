@@ -27,7 +27,7 @@ export default function App() {
   const [to, setTo] = useState('');
   const [error, setError] = useState('');
 
-  function handleFromChange(value: string) {
+  function Origin(value: string) {
     setFrom(value);
     if (value === to && value) {
       setError('Origin and destination cannot be the same!');
@@ -36,7 +36,7 @@ export default function App() {
     }
   }
 
-  function handleToChange(value: string) {
+  function Destination(value: string) {
     setTo(value);
     if (from === value && value) {
       setError('Origin and destination cannot be the same!');
@@ -53,7 +53,7 @@ export default function App() {
         <Text>Origin:</Text>
         <Picker
           selectedValue={from}
-          onValueChange={handleFromChange}
+          onValueChange={Origin}
           style={Platform.OS === 'android' ? styles.picker : undefined}
         >
           <Picker.Item label="Select" value="" />
@@ -69,7 +69,7 @@ export default function App() {
         <Text>Destination:</Text>
         <Picker
           selectedValue={to}
-          onValueChange={handleToChange}
+          onValueChange={Destination}
           style={Platform.OS === 'android' ? styles.picker : undefined}
         >
           <Picker.Item label="Select" value="" />
