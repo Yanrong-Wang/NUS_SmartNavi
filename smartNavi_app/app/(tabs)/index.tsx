@@ -1,50 +1,48 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { Platform } from 'react-native';
-import RouteSearch from '@/components/Route_Search';
-import busRoutes from '@/constants/busRoutes';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import schedule from '@/components/schedule';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import ScheduleScreen from '@/components/Schedule';
+import HomeScreen from '@/components/HomeScreen';
 
-const [from, setFrom] = useState('');
+const tab = createBottomTabNavigator();
+
+export default function App(){
+  const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [error, setError] = useState('');
-  const [schedule, setSchedule] = useState('');
-  
+  const [schedule, setSchedule] = useState([]);
+
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name = "Home">
-          {Props => (
+      <tab.Navigator>
+        <tab.Screen name = "Home" options = {{tabBarLabel: 'Schedule'}}>
+          {props => (
             <HomeScreen
-              {...Props}
+              {...props}
               from = {from}
               setFrom = {setFrom}
               to = {to}
               setTo = {setTo}
               error = {error}
               setError = {setError}
-              schedule = {schedule}
-              setSchedule = {setSchedule}
             />
           )}
-        </Stack.Screen>
-        <Stack.Screen name = "schedule">
+        </tab.Screen>
+        <tab.Screen name = "schedule" options = {{tabBarLabel: 'Schedule'}}>
           {props => (
-            <ScheduleScreen>
+            <ScheduleScreen
               {...props}
               schedule = {schedule}
               setSchedule = {setSchedule}
               setTo = {setTo}
             />
           )}
-        </Stack.Screen)
-      </Stack.Navigator>
+        </tab.Screen>
+      </tab.Navigator>
     </NavigationContainer>
   );
+}
 
-
-const Stack = createStackNavigator()
 
