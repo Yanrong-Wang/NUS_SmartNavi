@@ -27,7 +27,7 @@ export default function App() {
   const [to, setTo] = useState('');
   const [error, setError] = useState('');
 
-  function Origin(value: string) {
+  function handleOrigin(value: string) {
     setFrom(value);
     if (value === to && value) {
       setError('Origin and destination cannot be the same!');
@@ -36,7 +36,7 @@ export default function App() {
     }
   }
 
-  function Destination(value: string) {
+  function handleDestination(value: string) {
     setTo(value);
     if (from === value && value) {
       setError('Origin and destination cannot be the same!');
@@ -48,12 +48,11 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>NUS SmartNavi: Pick Route</Text>
-
       <View style={styles.pickerContainer}>
         <Text>Origin:</Text>
         <Picker
           selectedValue={from}
-          onValueChange={Origin}
+          onValueChange={handleOrigin}
           style={Platform.OS === 'android' ? styles.picker : undefined}
         >
           <Picker.Item label="Select" value="" />
@@ -69,7 +68,7 @@ export default function App() {
         <Text>Destination:</Text>
         <Picker
           selectedValue={to}
-          onValueChange={Destination}
+          onValueChange={handleDestination}
           style={Platform.OS === 'android' ? styles.picker : undefined}
         >
           <Picker.Item label="Select" value="" />
