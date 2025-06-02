@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import RouteSearch from './components/ui/Route_Search';
-import busRoutes from './constants/Bus_Route';
+import RouteSearch from '@/components/Route_Search';
+import busRoutes from '@/constants/busRoutes';
 
 const STOPS = [
   "Central Library",
