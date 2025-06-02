@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { Platform } from 'react-native';
 import RouteSearch from '@/components/Route_Search';
 import busRoutes from '@/constants/busRoutes';
 
@@ -53,9 +54,9 @@ export default function App() {
         <Picker
           selectedValue={from}
           onValueChange={handleFromChange}
-          style={styles.picker}
+          style={Platform.OS === 'android' ? styles.picker : undefined}
         >
-          <Picker.Item label="--Select--" value="" />
+          <Picker.Item label="Select" value="" />
           {STOPS.map(stop => (
             (stop === from || stop !== to) && (
               <Picker.Item key={stop} label={stop} value={stop} />
@@ -69,9 +70,9 @@ export default function App() {
         <Picker
           selectedValue={to}
           onValueChange={handleToChange}
-          style={styles.picker}
+          style={Platform.OS === 'android' ? styles.picker : undefined}
         >
-          <Picker.Item label="--Select--" value="" />
+          <Picker.Item label="Select" value="" />
           {STOPS.map(stop => (
             (stop === to || stop !== from) && (
               <Picker.Item key={stop} label={stop} value={stop} />
@@ -92,8 +93,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     padding: 30,
-    backgroundColor: '#fff',
-    flex: 1,
   },
   heading: {
     fontSize: 24,
@@ -105,7 +104,6 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
-    width: '100%',
   },
   error: {
     color: 'red',
