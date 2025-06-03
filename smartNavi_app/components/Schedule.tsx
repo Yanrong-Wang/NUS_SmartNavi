@@ -21,7 +21,7 @@ const STOPS = [
 
 export default function ScheduleScreen({schedule, setSchedule, setTo, navigation}){
     // data of newly created events
-    const [modalVisible, setModalVisioble] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
     const [eventName, seteventName] = useState('');
     const [eventTime, seteventTime] = useState('');
     const [eventLocation, seteventLocation] = useState('');
@@ -39,7 +39,7 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, navigation
         ]);
 
         // Clear data and close modal
-        setModalVisioble(false);
+        setModalVisible(false);
         seteventTime('');
         seteventName('');
         seteventLocation('');
@@ -98,7 +98,7 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, navigation
                                     ))}
                                 </Picker>
                                 <View style = {{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 20}}>
-                                    <Button title = "Cancel" onPress = {() => setModalVisioble(false)} />
+                                    <Button title = "Cancel" onPress = {() => setModalVisible(false)} />
                                     <View style = {{ width: 10 }} />
                                     <Button title = "Add" onPress = {addSchedule} disabled = {!eventName || !eventTime || !eventLocation} />
                                 </View>
