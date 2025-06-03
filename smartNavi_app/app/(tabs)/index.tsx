@@ -17,7 +17,7 @@ export default function App(){
   return (
     <NavigationContainer>
       <tab.Navigator>
-        <tab.Screen name = "Home" options = {{tabBarLabel: 'Schedule'}}>
+        <tab.Screen name = "Home" options = {{tabBarLabel: 'Home'}}>
           {props => (
             <HomeScreen
               {...props}

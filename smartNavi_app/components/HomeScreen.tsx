@@ -24,7 +24,16 @@ const STOPS = [
 
 // usestate is extracted to the App level 
 // use props to pass down state
-export default function HomeScreen({to, setTo, from , setFrom, error, setError}){
+type HomeScreenProps = {
+  from: string;
+  setFrom: (val: string) => void;
+  to: string;
+  setTo: (val: string) => void;
+  error: string;
+  setError: (val: string) => void;
+};
+
+export default function HomeScreen({from , setFrom, to, setTo, error, setError}){
     function handleOrigin(value: string) {
     setFrom(value);
     if (value === to && value) {

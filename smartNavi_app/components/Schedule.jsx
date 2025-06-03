@@ -19,7 +19,7 @@ const STOPS = [
   "COM3",
 ];
 
-export default function ScheduleScreen({schedules, setschedules, setTo, navigation}){
+export default function ScheduleScreen({schedule, setSchedule, setTo, navigation}){
     // data of newly created events
     const [modalVisible, setModalVisioble] = useState(false);
     const [eventName, seteventName] = useState('');
@@ -29,7 +29,7 @@ export default function ScheduleScreen({schedules, setschedules, setTo, navigati
     const addSchedule = () => {
         if (!eventName || !eventTime ||!eventLocation) return;
         setSchedule([
-            ...schedules,
+            ...schedule,
             {
                 id: Date.now().toString(),
                 name: eventName,
@@ -43,6 +43,7 @@ export default function ScheduleScreen({schedules, setschedules, setTo, navigati
         seteventTime('');
         seteventName('');
         seteventLocation('');
+    };
 
         const pressSchedule = (location) => {
             setTo(location);
@@ -51,13 +52,13 @@ export default function ScheduleScreen({schedules, setschedules, setTo, navigati
 
         return (
             <View style = {{ padding:20}}>
-                <Text style = {{ fontsize = 24, fontWeight = 'bold', marginBottom:20 }}>Schedule</Text>
+                <Text style = {{ fontSize: 24, fontWeight: 'bold', marginBottom:20 }}>Schedule</Text>
                 <FlatList
-                    data = {schedules}
+                    data = {schedule}
                     keyExtractor = {(item) => item.id}
-                    renderItem = {{ item }} => (
+                    renderItem = {({ item }) => (
                         <TouchableOpacity onPress = {() => pressSchedule(item.location)}
-                        style = {{ padding: 10}}>
+                            style = {{ padding: 10}}>
                             <Text style = {{ fontSize: 18 }}>{item.name}</Text>
                             <Text style = {{ fontSize: 16 }}>{item.time}</Text>
                             <Text style = {{ fontSize: 16 }}>{item.location}</Text>
@@ -68,11 +69,10 @@ export default function ScheduleScreen({schedules, setschedules, setTo, navigati
                     <View style={{ marginTop: 20 }}>
                         <Button title="+ Add Schedule" onPress={() => setModalVisible(true)} />
                     </View>
-                    
 
                     {/* modal for adding a new event */}
                     <Modal visible = {modalVisible} animationType="slide">
-                        <View style = {{flex = 1, justifyContent: 'center'}}></View>
+                        <View style = {{flex: 1, justifyContent: 'center'}}>
                             <View style = {{padding: 20, backgroundColor: 'white', borderRadius: 10}}>
                                 <Text style = {{ fontsize: 24, fontWeight: 'bold'}}>Add Schedule</Text>
                                 <TextInput
