@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+/*import { Image } from 'expo-image';
 import { Platform, StyleSheet } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
@@ -108,3 +108,23 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 });
+*/
+// app/(tabs)/schedule.tsx
+
+import React from 'react';
+import ScheduleScreenComponent from '@/components/Schedule';
+import { useNavigationContext } from '@/components/NavigationContext';
+import { router } from 'expo-router';
+
+export default function ScheduleTabScreen() {
+  const { schedule, setSchedule, setTo } = useNavigationContext();
+
+  return (
+    <ScheduleScreenComponent
+      schedule={schedule}
+      setSchedule={setSchedule}
+      setTo={setTo}
+      router={router}
+    />
+  );
+}

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { View, Text, Button, TextInput, TouchableOpacity, Platform, Modal, FlatList} from 'react-native';
+import { Router } from 'expo-router';
+import { ScheduleItem } from '@/components/NavigationContext';
 
 const STOPS = [
   "Central Library",
@@ -19,21 +21,14 @@ const STOPS = [
   "COM3",
 ];
 
-export type ScheduleItem = {
-    id: string;
-    name: string;
-    time: string;
-    location: string;
-};
-
 type ScheduleScreenProps = {
   schedule: ScheduleItem[];
   setSchedule: React.Dispatch<React.SetStateAction<ScheduleItem[]>>;
   setTo: (location: string) => void;
-  navigation: any;
+  router: Router;
 };
 
-export default function ScheduleScreen({schedule, setSchedule, setTo, navigation}:ScheduleScreenProps){
+export default function ScheduleScreen({schedule, setSchedule, setTo, router}:ScheduleScreenProps){
     // data of newly created events
     const [modalVisible, setModalVisible] = useState(false);
     const [eventName, seteventName] = useState('');
@@ -61,12 +56,12 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, navigation
 
         const pressSchedule = (location: string) => {
             setTo(location);
-            navigation.navigate('Home');
+            router.push('/(tabs)');
         };
 
         return (
-            <View style = {{ padding:20}}>
-                <Text style = {{ fontSize: 24, fontWeight: 'bold', marginBottom:20 }}>Schedule</Text>
+            <View style={{ padding: 20, paddingTop: 60 }}>
+                <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Schedule</Text>
                 <FlatList
                     data = {schedule}
                     keyExtractor = {(item) => item.id}
@@ -122,4 +117,4 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, navigation
                 </View>
             );
         }
-    
+

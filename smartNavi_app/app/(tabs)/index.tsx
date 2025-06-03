@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+/*import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -40,6 +40,33 @@ export default function App(){
           )}
         </tab.Screen>
       </tab.Navigator>
+  );
+}*/
+// app/(tabs)/index.tsx
+
+import React from 'react';
+import HomeScreen from '@/components/HomeScreen';
+import { useNavigationContext } from '@/components/NavigationContext';
+
+export default function IndexScreen() {
+  const {
+    from,
+    setFrom,
+    to,
+    setTo,
+    error,
+    setError
+  } = useNavigationContext();
+
+  return (
+    <HomeScreen
+      from={from}
+      setFrom={setFrom}
+      to={to}
+      setTo={setTo}
+      error={error}
+      setError={setError}
+    />
   );
 }
 
