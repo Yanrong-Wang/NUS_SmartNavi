@@ -19,7 +19,21 @@ const STOPS = [
   "COM3",
 ];
 
-export default function ScheduleScreen({schedule, setSchedule, setTo, navigation}){
+export type ScheduleItem = {
+    id: string;
+    name: string;
+    time: string;
+    location: string;
+};
+
+type ScheduleScreenProps = {
+  schedule: ScheduleItem[];
+  setSchedule: React.Dispatch<React.SetStateAction<ScheduleItem[]>>;
+  setTo: (location: string) => void;
+  navigation: any;
+};
+
+export default function ScheduleScreen({schedule, setSchedule, setTo, navigation}:ScheduleScreenProps){
     // data of newly created events
     const [modalVisible, setModalVisible] = useState(false);
     const [eventName, seteventName] = useState('');
@@ -45,7 +59,7 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, navigation
         seteventLocation('');
     };
 
-        const pressSchedule = (location) => {
+        const pressSchedule = (location: string) => {
             setTo(location);
             navigation.navigate('Home');
         };
@@ -74,7 +88,7 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, navigation
                     <Modal visible = {modalVisible} animationType="slide">
                         <View style = {{flex: 1, justifyContent: 'center'}}>
                             <View style = {{padding: 20, backgroundColor: 'white', borderRadius: 10}}>
-                                <Text style = {{ fontsize: 24, fontWeight: 'bold'}}>Add Schedule</Text>
+                                <Text style = {{ fontSize: 24, fontWeight: 'bold'}}>Add Schedule</Text>
                                 <TextInput
                                     placeholder = "Event Name"
                                     value = {eventName}

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ScheduleScreen from '@/components/Schedule';
+import { ScheduleItem } from '@/components/Schedule';
 import HomeScreen from '@/components/HomeScreen';
 
 const tab = createBottomTabNavigator();
@@ -11,7 +12,7 @@ export default function App(){
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [error, setError] = useState('');
-  const [schedule, setSchedule] = useState([]);
+  const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
 
   return (
       <tab.Navigator>
