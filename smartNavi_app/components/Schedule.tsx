@@ -7,7 +7,7 @@ import { ScheduleItem } from '@/components/NavigationContext';
 const STOPS = [
   "Central Library",
   "Yusof Ishak House",
-  "Univeristy Hall",
+  "University Hall",
   "Opp University Hall",
   "LT27",
   "S17",
@@ -19,6 +19,7 @@ const STOPS = [
   "Opp HSSML",
   "BIZ2",
   "COM3",
+  "Museum",
 ];
 
 type ScheduleScreenProps = {

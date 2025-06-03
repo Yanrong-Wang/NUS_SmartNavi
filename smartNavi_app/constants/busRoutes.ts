@@ -45,7 +45,7 @@ const busRoutes = [
         "University Hall",
         "Museum",
         "University Town",
-        "Opp Univeristy Hall",
+        "Opp University Hall",
         "S17",
         "Opp Kent Ridge MRT",
         "Prince George's Park Foyer",
