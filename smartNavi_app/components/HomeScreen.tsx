@@ -33,7 +33,7 @@ type HomeScreenProps = {
   setError: (val: string) => void;
 };
 
-export default function HomeScreen({from , setFrom, to, setTo, error, setError}){
+export default function HomeScreen({from , setFrom, to, setTo, error, setError}: HomeScreenProps){
     function handleOrigin(value: string) {
     setFrom(value);
     if (value === to && value) {
