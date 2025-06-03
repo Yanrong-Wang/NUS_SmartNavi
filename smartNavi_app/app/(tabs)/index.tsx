@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ScheduleScreen from '@/components/Schedule';
 import HomeScreen from '@/components/HomeScreen';
@@ -15,7 +14,6 @@ export default function App(){
   const [schedule, setSchedule] = useState([]);
 
   return (
-    <NavigationContainer>
       <tab.Navigator>
         <tab.Screen name = "Home" options = {{tabBarLabel: 'Home'}}>
           {props => (
@@ -41,7 +39,6 @@ export default function App(){
           )}
         </tab.Screen>
       </tab.Navigator>
-    </NavigationContainer>
   );
 }
 
