@@ -1,10 +1,11 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useMemo } from 'react';
+import { Colors } from '@/constants/Colors';
+import { ThemeProvider, Theme } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useColorScheme } from 'react-native';
 import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -17,13 +18,43 @@ export default function RootLayout() {
     return null;
   }
 
+  const theme: Theme = useMemo(
+    () => 
+      colorScheme === "light"
+        ? ({
+            dark: false,
+            colors: {
+              primary: Colors.light.tint,
+              background: Colors.light.background, 
+              card: Colors.light.background,
+              text: Colors.light.text,
+              border: '#c7c7c7',
+              notification: 'rgb(255, 59, 48)',
+            },
+            fonts: {},
+          } as Theme)
+        : ({
+            dark: true,
+            colors: {
+              primary: Colors.dark.tint,
+              background: Colors.dark.background, 
+              card: Colors.dark.background,
+              text: Colors.dark.text,
+              border: '#444444',
+              notification: 'rgb(255, 69, 58)',
+        },
+        fonts: {},
+      } as Theme),
+  [colorScheme]
+);
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={theme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
-      <StatusBar style="auto" />
+      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
     </ThemeProvider>
   );
 }
