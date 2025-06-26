@@ -5,6 +5,9 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { Router } from 'expo-router';
 import { ScheduleItem } from '@/components/NavigationContext';
+import { ThemedView } from '@/components/ThemedView';
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from 'react-native';
 
 const STOPS = [
   "Central Library",
@@ -32,6 +35,11 @@ type ScheduleScreenProps = {
 };
 
 export default function ScheduleScreen({schedule, setSchedule, setTo, router}:ScheduleScreenProps){
+    const colorScheme = useColorScheme() ?? 'light';
+    // Define the correct colors based on the theme & use it inside modal
+    const modalBackgroundColor = Colors[colorScheme].background;
+    const modalTextColor = Colors[colorScheme].text;
+
     // data of newly created events
     const [modalVisible, setModalVisible] = useState(false);
     const [eventName, seteventName] = useState('');
@@ -63,7 +71,7 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, router}:Sc
         };
 
         return (
-            <View style={{ padding: 20, paddingTop: 60 }}>
+            <ThemedView style={{ padding: 20, paddingTop: 60 }}>
                 <ThemedText style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Schedule</ThemedText>
                 <FlatList
                     data = {schedule}
@@ -78,14 +86,16 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, router}:Sc
                     )}
                     ListEmptyComponent={<ThemedText style={{ fontSize: 18 }}>No schedules yet.</ThemedText>}
                     />
-                    <View style={{ marginTop: 20 }}>
+                    <ThemedView style={{ marginTop: 20 }}>
                         <Button title="+ Add Schedule" onPress={() => setModalVisible(true)} />
-                    </View>
+                    </ThemedView>
 
                     {/* modal for adding a new event */}
-                    <Modal visible = {modalVisible} animationType="slide">
+                    <Modal visible = {modalVisible} animationType="slide" transparent={true}>
                         <View style = {{flex: 1, justifyContent: 'center'}}>
-                            <View style = {{padding: 20, backgroundColor: 'white', borderRadius: 10}}>
+                            <View style = {{
+                                backgroundColor: modalBackgroundColor,
+                                padding: 20, borderRadius: 10}}>
                                 <ThemedText style = {{ fontSize: 24, fontWeight: 'bold'}}>Add Schedule</ThemedText>
                                 <ThemedTextInput
                                     placeholder = "Event Name"
@@ -102,7 +112,7 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, router}:Sc
                                 <Picker
                                     selectedValue = {eventLocation}
                                     onValueChange = {seteventLocation}
-                                    style = {Platform.OS === 'android' ? { height: 50 }: undefined}
+                                    itemStyle={{ color: modalTextColor }}
                                 >
                                     <Picker.Item label = "Select Location" value = "" />
                                     {STOPS.map((stop) => (
@@ -111,13 +121,13 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, router}:Sc
                                 </Picker>
                                 <View style = {{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 20}}>
                                     <Button title = "Cancel" onPress = {() => setModalVisible(false)} />
-                                    <View style = {{ width: 10 }} />
+                                    <ThemedView style = {{ width: 10 }} />
                                     <Button title = "Add" onPress = {addSchedule} disabled = {!eventName || !eventTime || !eventLocation} />
                                 </View>
                             </View>
                         </View>
                     </Modal>
-                </View>
+                </ThemedView>
             );
         }
 
