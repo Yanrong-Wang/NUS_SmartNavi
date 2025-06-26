@@ -13,11 +13,6 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
-
   const theme: Theme = useMemo(
     () => 
       colorScheme === "light"
@@ -45,8 +40,13 @@ export default function RootLayout() {
         },
         fonts: {},
       } as Theme),
-  [colorScheme]
-);
+    [colorScheme]
+  );
+
+  if (!loaded) {
+    // Async font loading only occurs in development.
+    return null;
+  }
 
   return (
     <ThemeProvider value={theme}>
