@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
-import { View, Text, Button, TextInput, TouchableOpacity, Platform, Modal, FlatList} from 'react-native';
+import { View, Button, TouchableOpacity, Platform, Modal, FlatList} from 'react-native';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { Router } from 'expo-router';
 import { ScheduleItem } from '@/components/NavigationContext';
 
@@ -62,19 +64,19 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, router}:Sc
 
         return (
             <View style={{ padding: 20, paddingTop: 60 }}>
-                <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Schedule</Text>
+                <ThemedText style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Schedule</ThemedText>
                 <FlatList
                     data = {schedule}
                     keyExtractor = {(item) => item.id}
                     renderItem = {({ item }) => (
                         <TouchableOpacity onPress = {() => pressSchedule(item.location)}
                             style = {{ padding: 10}}>
-                            <Text style = {{ fontSize: 18 }}>{item.name}</Text>
-                            <Text style = {{ fontSize: 16 }}>{item.time}</Text>
-                            <Text style = {{ fontSize: 16 }}>{item.location}</Text>
+                            <ThemedText style = {{ fontSize: 18 }}>{item.name}</ThemedText>
+                            <ThemedText style = {{ fontSize: 16 }}>{item.time}</ThemedText>
+                            <ThemedText style = {{ fontSize: 16 }}>{item.location}</ThemedText>
                         </TouchableOpacity>
                     )}
-                    ListEmptyComponent={<Text style={{ color: 'black' }}>No schedules yet.</Text>}
+                    ListEmptyComponent={<ThemedText style={{ fontSize: 18 }}>No schedules yet.</ThemedText>}
                     />
                     <View style={{ marginTop: 20 }}>
                         <Button title="+ Add Schedule" onPress={() => setModalVisible(true)} />
@@ -84,14 +86,14 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, router}:Sc
                     <Modal visible = {modalVisible} animationType="slide">
                         <View style = {{flex: 1, justifyContent: 'center'}}>
                             <View style = {{padding: 20, backgroundColor: 'white', borderRadius: 10}}>
-                                <Text style = {{ fontSize: 24, fontWeight: 'bold'}}>Add Schedule</Text>
-                                <TextInput
+                                <ThemedText style = {{ fontSize: 24, fontWeight: 'bold'}}>Add Schedule</ThemedText>
+                                <ThemedTextInput
                                     placeholder = "Event Name"
                                     value = {eventName}
                                     onChangeText = {seteventName}
                                     style = {{padding: 10}}
                                 />
-                                <TextInput
+                                <ThemedTextInput
                                     placeholder = "Event Time"
                                     value = {eventTime}
                                     onChangeText = {seteventTime}
