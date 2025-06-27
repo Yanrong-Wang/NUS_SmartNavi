@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Button, StyleSheet } from 'react-native';
+import { ThemedText } from '@/components/ThemedText';
 import busRoutes from '@/constants/busRoutes';
 
 type RouteSearchProps = {
@@ -40,7 +41,7 @@ export default function RouteSearch({ from, to, disabled }: RouteSearchProps) {
     <View style={styles.container}>
       <Button title="Search" disabled={disabled} onPress={findRoute} />
       {searched && (
-        <Text style={styles.resultText}>{result}</Text>
+        <ThemedText style={styles.resultText}>{result}</ThemedText>
       )}
     </View>
   );
@@ -53,6 +54,5 @@ const styles = StyleSheet.create({
   resultText: {
     marginTop: 20,
     fontSize: 16,
-    color: 'black',
   },
 });

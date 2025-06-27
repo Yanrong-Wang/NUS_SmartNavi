@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { ThemedText } from '@/components/ThemedText';
 import { Picker } from '@react-native-picker/picker';
 import { Platform } from 'react-native';
 import RouteSearch from '@/components/Route_Search';
@@ -56,9 +57,9 @@ export default function HomeScreen({from , setFrom, to, setTo, error, setError}:
   // Display main page: origin and destination selection
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>NUS SmartNavi: Pick Route</Text>
+      <ThemedText style={styles.heading}>NUS SmartNavi: Pick Route</ThemedText>
       <View style={styles.pickerContainer}>
-        <Text>Origin:</Text>
+        <ThemedText>Origin:</ThemedText>
         <Picker
           selectedValue={from}
           onValueChange={handleOrigin}
@@ -74,7 +75,7 @@ export default function HomeScreen({from , setFrom, to, setTo, error, setError}:
       </View>
 
       <View style={styles.pickerContainer}>
-        <Text>Destination:</Text>
+        <ThemedText>Destination:</ThemedText>
         <Picker
           selectedValue={to}
           onValueChange={handleDestination}
@@ -90,7 +91,7 @@ export default function HomeScreen({from , setFrom, to, setTo, error, setError}:
       </View>
 
       {error.length > 0 && (
-        <Text style={styles.error}>{error}</Text>
+        <ThemedText style={styles.error}>{error}</ThemedText>
       )}
 
       <RouteSearch from={from} to={to} disabled={!!error || !from || !to} />

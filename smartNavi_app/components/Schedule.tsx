@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
-import { View, Text, Button, TextInput, TouchableOpacity, Platform, Modal, FlatList, StyleSheet} from 'react-native';
+import { View, Button, TouchableOpacity, Platform, Modal, FlatList} from 'react-native';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedTextInput } from '@/components/ThemedTextInput';
 import { Router } from 'expo-router';
 import { ScheduleItem } from '@/components/NavigationContext';
+import { ThemedView } from '@/components/ThemedView';
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from 'react-native';
 
 const STOPS = [
   "Central Library",
@@ -30,6 +35,11 @@ type ScheduleScreenProps = {
 };
 
 export default function ScheduleScreen({schedule, setSchedule, setTo, router}:ScheduleScreenProps){
+    const colorScheme = useColorScheme() ?? 'light';
+    // Define the correct colors based on the theme & use it inside modal
+    const modalBackgroundColor = Colors[colorScheme].background;
+    const modalTextColor = Colors[colorScheme].text;
+
     // data of newly created events
     const [modalVisible, setModalVisible] = useState(false);
     const [eventName, seteventName] = useState('');
@@ -61,68 +71,65 @@ export default function ScheduleScreen({schedule, setSchedule, setTo, router}:Sc
         };
 
         return (
-            <View style={styles.container}>
-                <Text style={styles.title}>Schedule</Text>
-                <View style={styles.contentContainer}>
-                    <FlatList
-                        data = {schedule}
-                        keyExtractor = {(item) => item.id}
-                        renderItem = {({ item }) => (
-                            <TouchableOpacity onPress = {() => pressSchedule(item.location)}
-                                style = {styles.scheduleItem}>
-                                <Text style = {styles.eventName}>{item.name}</Text>
-                                <Text style = {styles.eventTime}>{item.time}</Text>
-                                <Text style = {styles.eventLocation}>{item.location}</Text>
-                            </TouchableOpacity>
-                        )}
-                        ListEmptyComponent={<Text style={styles.emptyText}>No schedules yet.</Text>}
-                        showsVerticalScrollIndicator={false}
-                        />
-                </View>
-                <View style={styles.addButtonContainer}>
-                    <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
-                        <Text style={styles.addButtonText}>+ Add Schedule</Text>
-                    </TouchableOpacity>
-                </View>
+            <ThemedView style={{ padding: 20, paddingTop: 60 }}>
+                <ThemedText style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20 }}>Schedule</ThemedText>
+                <FlatList
+                    data = {schedule}
+                    keyExtractor = {(item) => item.id}
+                    renderItem = {({ item }) => (
+                        <TouchableOpacity onPress = {() => pressSchedule(item.location)}
+                            style = {{ padding: 10}}>
+                            <ThemedText style = {{ fontSize: 18 }}>{item.name}</ThemedText>
+                            <ThemedText style = {{ fontSize: 16 }}>{item.time}</ThemedText>
+                            <ThemedText style = {{ fontSize: 16 }}>{item.location}</ThemedText>
+                        </TouchableOpacity>
+                    )}
+                    ListEmptyComponent={<ThemedText style={{ fontSize: 18 }}>No schedules yet.</ThemedText>}
+                    />
+                    <ThemedView style={{ marginTop: 20 }}>
+                        <Button title="+ Add Schedule" onPress={() => setModalVisible(true)} />
+                    </ThemedView>
 
-                {/* modal for adding a new event */}
-                <Modal visible = {modalVisible} animationType="slide">
-                    <View style = {styles.modalContainer}>
-                        <View style = {styles.modalContent}>
-                            <Text style = {styles.modalTitle}>Add Schedule</Text>
-                            <TextInput
-                                placeholder = "Event Name"
-                                value = {eventName}
-                                onChangeText = {seteventName}
-                                style = {styles.input}
-                            />
-                            <TextInput
-                                placeholder = "Event Time"
-                                value = {eventTime}
-                                onChangeText = {seteventTime}
-                                style = {styles.input}
-                            />
-                            <Picker
-                                selectedValue = {eventLocation}
-                                onValueChange = {seteventLocation}
-                                style = {Platform.OS === 'android' ? styles.picker : undefined}
-                            >
-                                <Picker.Item label = "Select Location" value = "" />
-                                {STOPS.map((stop) => (
-                                    <Picker.Item key = {stop} label = {stop} value = {stop} />
-                                ))}
-                            </Picker>
-                            <View style = {styles.buttonContainer}>
-                                <Button title = "Cancel" onPress = {() => setModalVisible(false)} />
-                                <View style = {styles.buttonSpacer} />
-                                <Button title = "Add" onPress = {addSchedule} disabled = {!eventName || !eventTime || !eventLocation} />
+                    {/* modal for adding a new event */}
+                    <Modal visible = {modalVisible} animationType="slide" transparent={true}>
+                        <View style = {{flex: 1, justifyContent: 'center'}}>
+                            <View style = {{
+                                backgroundColor: modalBackgroundColor,
+                                padding: 20, borderRadius: 10}}>
+                                <ThemedText style = {{ fontSize: 24, fontWeight: 'bold'}}>Add Schedule</ThemedText>
+                                <ThemedTextInput
+                                    placeholder = "Event Name"
+                                    value = {eventName}
+                                    onChangeText = {seteventName}
+                                    style = {{padding: 10}}
+                                />
+                                <ThemedTextInput
+                                    placeholder = "Event Time"
+                                    value = {eventTime}
+                                    onChangeText = {seteventTime}
+                                    style = {{padding: 10}}
+                                />
+                                <Picker
+                                    selectedValue = {eventLocation}
+                                    onValueChange = {seteventLocation}
+                                    itemStyle={{ color: modalTextColor }}
+                                >
+                                    <Picker.Item label = "Select Location" value = "" />
+                                    {STOPS.map((stop) => (
+                                        <Picker.Item key = {stop} label = {stop} value = {stop} />
+                                    ))}
+                                </Picker>
+                                <View style = {{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 20}}>
+                                    <Button title = "Cancel" onPress = {() => setModalVisible(false)} />
+                                    <ThemedView style = {{ width: 10 }} />
+                                    <Button title = "Add" onPress = {addSchedule} disabled = {!eventName || !eventTime || !eventLocation} />
+                                </View>
                             </View>
                         </View>
-                    </View>
-                </Modal>
-            </View>
-        );
-    }
+                    </Modal>
+                </ThemedView>
+            );
+        }
 
 const styles = StyleSheet.create({
   container: {
