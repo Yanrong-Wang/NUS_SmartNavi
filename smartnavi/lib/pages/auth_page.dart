@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:smartnavi/utils/router.gr.dart';
 
 final _providers = [EmailAuthProvider()];
 
@@ -10,7 +11,7 @@ class AuthPage extends StatelessWidget {
 
   void _onSignedIn(BuildContext context) {
     // Handle post sign-in logic here, such as navigating to the home page
-    AutoRouter.of(context).replacePath('/');
+    AutoRouter.of(context).replace(HomeRoute());
   }
 
   @override
@@ -23,9 +24,10 @@ class AuthPage extends StatelessWidget {
           debugPrint('New user created: ${state.credential.user?.email}');
           _onSignedIn(context);
         }),
-        AuthStateChangeAction<SignedIn>((context, state) {}),
+        AuthStateChangeAction<SignedIn>((context, state) {
+          _onSignedIn(context);
+        }),
       ],
     );
   }
-
 }
