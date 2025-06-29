@@ -11,7 +11,7 @@ class Building {
     required this.longitude,
   });
 
-  factory Building.fromJson(Map<String, dynamic> json) {
+  factory Building.fromFirestore(Map<String, dynamic> json) {
     return Building(
       buildingCode: json['buildingCode'] as String,
       buildingName: json['buildingName'] as String,

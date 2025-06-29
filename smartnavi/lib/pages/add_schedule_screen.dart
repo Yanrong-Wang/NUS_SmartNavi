@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:search_page/search_page.dart';
 import 'package:intl/intl.dart';
-
+import 'package:auto_route/auto_route.dart';
 import '../models/buildings_model.dart';
 import '../models/schedule_model.dart';
 import '../services/firestore_service.dart';
 
+@RoutePage()
 class AddScheduleScreen extends StatefulWidget {
   const AddScheduleScreen({super.key});
 
@@ -89,7 +90,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
               _selectedBuilding = building;
               _locationController.text = building.buildingName;
             });
-            Navigator.of(context).pop();
+            context.router.pop();
           },
         ),
       ),
@@ -123,7 +124,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       await _firestoreService.addSchedule(newSchedule);
       
       if (mounted) {
-        Navigator.of(context).pop();
+        context.router.pop();
       }
     }
   }
