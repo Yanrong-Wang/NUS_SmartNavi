@@ -1,13 +1,12 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:search_page/search_page.dart';
 import 'package:intl/intl.dart';
-
-import '../models/buildings_model.dart';
+import 'package:auto_route/auto_route.dart';
+import '../models/buildings.dart';
 import '../models/schedule_model.dart';
 import '../services/firestore_service.dart';
 
+@RoutePage()
 class AddScheduleScreen extends StatefulWidget {
   const AddScheduleScreen({super.key});
 
@@ -34,10 +33,10 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   }
 
   Future<void> _loadBuildingData() async {
-    final String jsonString = await rootBundle.loadString('assets/buildings.json');
-    final List<dynamic> jsonList = json.decode(jsonString);
+    final buildingsMap = await Building.buildings;
     setState(() {
-      _buildings = jsonList.map((json) => Building.fromJson(json)).toList();
+      _buildings = buildingsMap.values.toList();
+      _buildings.sort((a, b) => a.roomName.compareTo(b.roomName));
     });
   }
 
@@ -70,26 +69,24 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       context: context,
       delegate: SearchPage<Building>(
         items: _buildings,
-        searchLabel: 'Search building name or code...',
+        searchLabel: 'Search building name ...',
         suggestion: const Center(
-          child: Text('Filter buildings by name or code'),
+          child: Text('Filter buildings by name'),
         ),
         failure: const Center(
           child: Text('No building found :('),
         ),
         filter: (building) => [
-          building.buildingName,
-          building.buildingCode,
+          building.roomName,
         ],
         builder: (building) => ListTile(
-          title: Text(building.buildingName),
-          subtitle: Text(building.buildingCode),
+          title: Text(building.roomName),
           onTap: () {
             setState(() {
               _selectedBuilding = building;
-              _locationController.text = building.buildingName;
+              _locationController.text = building.roomName;
             });
-            Navigator.of(context).pop();
+            context.router.pop();
           },
         ),
       ),
@@ -117,13 +114,13 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
         id: '', // Firestore will generate ID
         title: _titleController.text,
         eventDate: eventDateTime,
-        locationName: _selectedBuilding!.buildingName,
+        locationName: _selectedBuilding!.roomName,
       );
 
       await _firestoreService.addSchedule(newSchedule);
       
       if (mounted) {
-        Navigator.of(context).pop();
+        context.router.pop();
       }
     }
   }

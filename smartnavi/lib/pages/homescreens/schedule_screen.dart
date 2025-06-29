@@ -4,7 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../../models/schedule_model.dart';
 import '../../services/firestore_service.dart';
-import '../add_schedule_screen.dart';
+import '../../utils/router.gr.dart';
 
 @RoutePage()
 class ScheduleScreen extends StatefulWidget {
@@ -101,9 +101,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ),
        floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const AddScheduleScreen()),
-          );
+          context.router.push(const AddScheduleRoute());
         },
         child: const Icon(Icons.add),
       ),
