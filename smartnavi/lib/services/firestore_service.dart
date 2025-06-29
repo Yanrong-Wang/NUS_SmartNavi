@@ -22,4 +22,5 @@ class FirestoreService {
   Future<void> deleteSchedule(String id) {
     return _db.collection('schedules').doc(id).delete();
   }
+
 }

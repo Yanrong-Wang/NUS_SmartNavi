@@ -23,5 +23,6 @@ class AppRouter extends RootStackRouter {
         AutoRoute(path: "settings", page: SettingRoute.page),
       ],
     ),
+    AutoRoute(path: "/addschedule", page: AddScheduleRoute.page),
   ];
 }
