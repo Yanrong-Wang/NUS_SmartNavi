@@ -38,7 +38,6 @@ class FirestoreService {
       final stationNames = snapshot.docs
           .map((doc) => doc.data()['name'] as String)
           .toList();
-      print("Fetched station names: $stationNames");
       return stationNames;
     } catch (e) {
       print("Error fetching station names: $e");

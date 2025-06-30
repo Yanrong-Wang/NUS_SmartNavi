@@ -1,9 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:smartnavi/pages/auth_page.dart';
 import 'package:smartnavi/utils/router.gr.dart';
-import '../../utils/router.dart';
 
 @RoutePage()
 class SettingScreen extends StatefulWidget {

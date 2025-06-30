@@ -1,5 +1,10 @@
 allprojects {
     repositories {
+        // 阿里云镜像源 - Kotlin DSL 格式
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://maven.aliyun.com/repository/jcenter") }
+        maven { url = uri("https://maven.aliyun.com/nexus/content/groups/public") }
+
         google()
         mavenCentral()
     }
