@@ -20,20 +20,20 @@ class AppRouter extends RootStackRouter {
       guards: [AuthGuard()], 
       children: [
         AutoRoute(
-          path: "/navigation", 
+          path: "navigation", 
           page: NavigationRoute.page,
           initial: true,
         ),
         AutoRoute(
-          path: "/nearby", 
+          path: "nearby", 
           page: NearbyRoute.page,
         ),
         AutoRoute(
-          path: "/schedule", 
+          path: "schedule", 
           page: ScheduleRoute.page,
         ),
         AutoRoute(
-          path: "/settings", 
+          path: "settings", 
           page: SettingRoute.page,
         ),
       ],
