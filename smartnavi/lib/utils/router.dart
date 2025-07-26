@@ -50,6 +50,5 @@ class AppRouter extends RootStackRouter {
       page: EditScheduleRoute.page,
       path: '/edit-schedule/:scheduleId',
     ),
-  
   ];
 }
