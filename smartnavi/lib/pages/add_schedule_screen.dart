@@ -16,8 +16,8 @@ class AddScheduleScreen extends StatefulWidget {
 
 class _AddScheduleScreenState extends State<AddScheduleScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController();
-  final _locationController = TextEditingController();
+  final _titleInput = TextEditingController();
+  final _locationInput = TextEditingController();
   
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
@@ -53,7 +53,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     // Pick Time
     final TimeOfDay? time = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(DateTime.now()),
+      initialTime: TimeOfDay.now(),
     );
     if (!mounted) return; 
     if (time == null) return;
@@ -76,15 +76,13 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
         failure: const Center(
           child: Text('No building found :('),
         ),
-        filter: (building) => [
-          building.roomName,
-        ],
+        filter: (building) => [building.roomName],
         builder: (building) => ListTile(
           title: Text(building.roomName),
           onTap: () {
             setState(() {
               _selectedBuilding = building;
-              _locationController.text = building.roomName;
+              _locationInput.text = building.roomName;
             });
             context.router.pop();
           },
@@ -112,12 +110,19 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
 
       final newSchedule = Schedule(
         id: '', // Firestore will generate ID
-        title: _titleController.text,
+        title: _titleInput.text,
         eventDate: eventDateTime,
-        locationName: _selectedBuilding!.roomName,
+        locationName: _selectedBuilding?.roomName ?? '', // Ensure locationName is not null
       );
+      try{
+        await _firestoreService.addSchedule(newSchedule);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error adding schedule: $e')),
+        );
+        return;
+      }
 
-      await _firestoreService.addSchedule(newSchedule);
       
       if (mounted) {
         context.router.pop();
