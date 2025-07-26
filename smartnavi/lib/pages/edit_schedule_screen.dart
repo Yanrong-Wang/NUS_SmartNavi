@@ -28,7 +28,6 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
   TimeOfDay? _selectedTime;
   Building? _selectedBuilding;
   List<Building> _buildings = [];
-  Schedule? _currentSchedule;
   bool _isLoading = true;
 
   final FirestoreService _firestoreService = FirestoreService();
@@ -59,7 +58,6 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
     try {
       final schedule = await _firestoreService.getScheduleById(widget.scheduleId);
       if (schedule != null) {
-        _currentSchedule = schedule;
         _titleInput.text = schedule.title;
         _locationInput.text = schedule.locationName;
         _selectedDate = schedule.eventDate;
@@ -250,6 +248,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                   return null;
                 },
               ),
+
               const SizedBox(height: 16),
               TextFormField(
                 controller: _locationInput,
@@ -293,19 +292,22 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: const Text('Update Schedule'),
+                      child: const Text('Update'),
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: _deleteSchedule,
+                      onPressed: () {
+                        // Directly exit the edit screen without saving changes
+                        context.router.pop();
+                      },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        side: const BorderSide(color: Colors.red),
+                        foregroundColor: Colors.grey,
+                        side: const BorderSide(color: Colors.grey),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: const Text('Delete'),
+                      child: const Text('Cancel'),
                     ),
                   ),
                 ],
