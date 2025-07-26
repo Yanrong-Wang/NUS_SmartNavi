@@ -144,7 +144,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
           child: ListView(
             children: [
               TextFormField(
-                controller: _titleController,
+                controller: _titleInput,
                 decoration: const InputDecoration(
                   labelText: 'Schedule Title',
                   border: OutlineInputBorder(),
@@ -159,7 +159,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
               const SizedBox(height: 16),
               // Location Search Field
               TextFormField(
-                controller: _locationController,
+                controller: _locationInput,
                 readOnly: true,
                 onTap: _showSearchPage,
                 decoration: const InputDecoration(

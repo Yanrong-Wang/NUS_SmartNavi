@@ -60,8 +60,8 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       final schedule = await _firestoreService.getScheduleById(widget.scheduleId);
       if (schedule != null) {
         _currentSchedule = schedule;
-        _titleController.text = schedule.title;
-        _locationController.text = schedule.locationName;
+        _titleInput.text = schedule.title;
+        _locationInput.text = schedule.locationName;
         _selectedDate = schedule.eventDate;
         _selectedTime = TimeOfDay.fromDateTime(schedule.eventDate);
         
