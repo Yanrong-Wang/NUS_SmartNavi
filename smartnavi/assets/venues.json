@@ -1,0 +1,587 @@
+{
+    "UTown": [
+        "UTOWN"
+    ],
+    "PGP": [
+        "PGP",
+        "PGPR"
+    ],
+    "LT17": [
+        "COM3",
+        "BIZ2"
+    ],
+    "LT16": [
+        "COM3",
+        "BIZ2"
+    ],
+    "BIZ2": [
+        "BIZ2",
+        "HSSML-OPP"
+    ],
+    "BIZ1": [
+        "HSSML-OPP",
+        "BIZ2"
+    ],
+    "LT10": [
+        "AS5",
+        "NUSS-OPP",
+        "CLB"
+    ],
+    "AS7": [
+        "AS5",
+        "NUSS-OPP",
+        "LT13"
+    ],
+    "AS8": [
+        "CLB",
+        "IT"
+    ],
+    "S2": [
+        "UHALL-OPP",
+        "UHall"
+    ],
+    "S1A": [
+        "UHALL-OPP",
+        "UHall"
+    ],
+    "S16": [
+        "S17",
+        "LT27"
+    ],
+    "Hon Sui Sen Auditorium": [
+        "COM3",
+        "BIZ2",
+        "HSSML-OPP"
+    ],
+    "LT3": [
+        "UHall",
+        "UHALL-OPP"
+    ],
+    "EA": [
+        "MUSEUM",
+        "JP-SCH-16151"
+    ],
+    "LT1": [
+        "MUSEUM",
+        "RAFFLES"
+    ],
+    "LT5": [
+        "YIH",
+        "YIH-OPP"
+    ],
+    "E1": [
+        "YIH",
+        "YIH-OPP"
+    ],
+    "E4A": [
+        "YIH",
+        "YIH-OPP",
+        "UHC"
+    ],
+    "E3": [
+        "MUSEUM",
+        "RAFFLES",
+        "UHC"
+    ],
+    "LT4": [
+        "UHall",
+        "UHALL-OPP",
+        "RAFFLES"
+    ],
+    "COM1": [
+        "COM3",
+        "BIZ2"
+    ],
+    "I3": [
+        "HSSML-OPP",
+        "BIZ2"
+    ],
+    "LT7": [
+        "MUSEUM",
+        "RAFFLES"
+    ],
+    "E4": [
+        "YIH",
+        "YIH-OPP"
+    ],
+    "LT2": [
+        "MUSEUM",
+        "YIH"
+    ],
+    "LT6": [
+        "YIH",
+        "YIH-OPP"
+    ],
+    "E2": [
+        "MUSEUM",
+        "YIH",
+        "YIH-OPP"
+    ],
+    "AS3": [
+        "AS5",
+        "CLB"
+    ],
+    "AS5": [
+        "AS5",
+        "NUSS-OPP"
+    ],
+    "AS1": [
+        "CLB",
+        "IT"
+    ],
+    "AS4": [
+        "AS5",
+        "CLB",
+        "NUSS-OPP"
+    ],
+    "AS2": [
+        "CLB",
+        "AS5",
+        "IT"
+    ],
+    "LT28": [
+        "S17",
+        "LT27",
+        "KR-MRT-OPP"
+    ],
+    "S5": [
+        "UHALL-OPP",
+        "UHall"
+    ],
+    "LT32": [
+        "UHALL-OPP",
+        "S17",
+        "UHall"
+    ],
+    "LT27": [
+        "S17",
+        "LT27"
+    ],
+    "LT31": [
+        "S17",
+        "LT27"
+    ],
+    "E5": [
+        "YIH",
+        "YIH-OPP",
+        "CLB"
+    ],
+    "LT34": [
+        "S17",
+        "LT27"
+    ],
+    "LT26": [
+        "S17",
+        "LT27"
+    ],
+    "LT21": [
+        "UHALL-OPP",
+        "UHall"
+    ],
+    "LT33": [
+        "S17",
+        "LT27"
+    ],
+    "S14": [
+        "S17",
+        "LT27"
+    ],
+    "LT20": [
+        "UHALL-OPP",
+        "UHall",
+        "S17"
+    ],
+    "LT29": [
+        "S17",
+        "LT27"
+    ],
+    "S8": [
+        "UHALL-OPP",
+        "S17"
+    ],
+    "S13": [
+        "S17",
+        "UHALL-OPP",
+        "LT27"
+    ],
+    "EW2": [
+        "YIH",
+        "YIH-OPP"
+    ],
+    "LT7A": [
+        "MUSEUM",
+        "JP-SCH-16151",
+        "RAFFLES"
+    ],
+    "MD1": [
+        "LT27",
+        "S17"
+    ],
+    "AS6": [
+        "CLB",
+        "COM3",
+        "IT"
+    ],
+    "COM2": [
+        "COM3",
+        "BIZ2"
+    ],
+    "LT15": [
+        "CLB",
+        "COM3",
+        "IT"
+    ],
+    "LT18": [
+        "COM3",
+        "BIZ2",
+        "HSSML-OPP"
+    ],
+    "S17": [
+        "S17",
+        "LT27"
+    ],
+    "HSS": [
+        "HSSML-OPP",
+        "BIZ2",
+        "COM3"
+    ],
+    "LT9": [
+        "AS5",
+        "CLB",
+        "NUSS-OPP"
+    ],
+    "LT11": [
+        "CLB",
+        "AS5",
+        "IT"
+    ],
+    "LT8": [
+        "AS5",
+        "NUSS-OPP",
+        "LT13"
+    ],
+    "LT12": [
+        "AS5",
+        "NUSS-OPP",
+        "CLB"
+    ],
+    "LT14": [
+        "CLB",
+        "IT"
+    ],
+    "E2A": [
+        "YIH",
+        "YIH-OPP"
+    ],
+    "WS2": [
+        "YIH",
+        "YIH-OPP"
+    ],
+    "E-LAB": [
+        "S17",
+        "UHall"
+    ],
+    "S11": [
+        "S17",
+        "UHall"
+    ],
+    "S12": [
+        "S17",
+        "UHall"
+    ],
+    "LT13": [
+        "LT13",
+        "AS5",
+        "NUSS-OPP"
+    ],
+    "CELS": [
+        "LT27",
+        "S17"
+    ],
+    "E1A": [
+        "YIH",
+        "YIH-OPP"
+    ],
+    "MD4": [
+        "LT27",
+        "S17"
+    ],
+    "MD7": [
+        "S17",
+        "LT27"
+    ],
+    "S4A": [
+        "UHALL-OPP",
+        "UHall"
+    ],
+    "C4": [
+        "UHall",
+        "S17"
+    ],
+    "MD10": [
+        "S17",
+        "LT27"
+    ],
+    "MD11": [
+        "S17",
+        "LT27"
+    ],
+    "RC2": [
+        "UTOWN"
+    ],
+    "UTown Auditorium 3": [
+        "UTOWN"
+    ],
+    "Engineering Auditorium": [
+        "MUSEUM",
+        "JP-SCH-16151",
+        "RAFFLES"
+    ],
+    "Law Lecture Theatre": [
+        "OTH",
+        "CG",
+        "BG-MRT"
+    ],
+    "SDE2": [
+        "RAFFLES",
+        "UHall",
+        "MUSEUM"
+    ],
+    "LT19": [
+        "COM3",
+        "BIZ2",
+        "HSSML-OPP"
+    ],
+    "Law Auditorium": [
+        "OTH",
+        "BG-MRT",
+        "CG"
+    ],
+    "Ngee Ann Kongsi Auditorium": [
+        "UTOWN",
+        "MUSEUM"
+    ],
+    "Town Plaza Seminar Room": [
+        "UTOWN"
+    ],
+    "ERC Global Learning Room": [
+        "UTOWN"
+    ],
+    "LT51": [
+        "UTOWN"
+    ],
+    "Saga College": [
+        "UTOWN"
+    ],
+    "RC4": [
+        "UTOWN"
+    ],
+    "LT52": [
+        "UTOWN"
+    ],
+    "College of Alice and Peter Pan": [
+        "UTOWN"
+    ],
+    "RVRC Multi-Purpose Room": [
+        "UHall",
+        "UHALL-OPP"
+    ],
+    "USP MC": [
+        "UTOWN"
+    ],
+    "Cendana College": [
+        "UTOWN"
+    ],
+    "Elm College": [
+        "UTOWN"
+    ],
+    "Kewalram Chanrai Room": [
+        "UTOWN"
+    ],
+    "Tan Chin Tuan Lecture Theatre": [
+        "UTOWN"
+    ],
+    "Black Box Theatre": [
+        "UTOWN"
+    ],
+    "Performance Hall": [
+        "UTOWN"
+    ],
+    "Practice Room": [
+        "UTOWN"
+    ],
+    "UTown Auditorium 1": [
+        "UTOWN"
+    ],
+    "UTown Auditorium 2": [
+        "UTOWN"
+    ],
+    "USP Multimedia Lab": [
+        "UTOWN"
+    ],
+    "EH": [
+        "PGP",
+        "HSSML-OPP"
+    ],
+    "Cerebro@SOC": [
+        "CLB",
+        "COM3",
+        "IT"
+    ],
+    "Town Plaza Global Learning Room": [
+        "UTOWN"
+    ],
+    "ERC Active Learning Room": [
+        "UTOWN"
+    ],
+    "LT50": [
+        "UTOWN"
+    ],
+    "LT53": [
+        "UTOWN"
+    ],
+    "Paris Tokyo Room": [
+        "YIH",
+        "YIH-OPP"
+    ],
+    "EW1": [
+        "MUSEUM",
+        "JP-SCH-16151"
+    ],
+    "MD9": [
+        "S17",
+        "LT27",
+        "KR-MRT-OPP"
+    ],
+    "E3A": [
+        "MUSEUM",
+        "JP-SCH-16151"
+    ],
+    "RVRC Seminar room": [
+        "UHall",
+        "UHALL-OPP"
+    ],
+    "ERC Seminar Room": [
+        "UTOWN"
+    ],
+    "SPSWETLAB": [
+        "S17",
+        "LT27"
+    ],
+    "Temasek Hall Office Seminar Room": [
+        "NUSS-OPP",
+        "AS5"
+    ],
+    "UTown SRC Practice Room": [
+        "UTOWN"
+    ],
+    "KEVII-MR2": [
+        "HSSML-OPP",
+        "BIZ2",
+        "PGP Foyer"
+    ],
+    "SDE4": [
+        "SDE3-OPP",
+        "RAFFLES",
+        "KV"
+    ],
+    "SH": [
+        "PGP",
+        "HSSML-OPP",
+        "PGP Foyer"
+    ],
+    "Medicine and Science Library": [
+        "LT27",
+        "S17"
+    ],
+    "Yusof Ishak House": [
+        "YIH",
+        "YIH-OPP"
+    ],
+    "Frontier": [
+        "S17",
+        "UHall"
+    ],
+    "CQT": [
+        "S17",
+        "LT27"
+    ],
+    "Hybrid_B": [
+        "UHall",
+        "UHALL-OPP"
+    ],
+    "Interaction": [
+        "PGPR",
+        "PGP",
+        "HSSML-OPP"
+    ],
+    "UTown Dance Studio": [
+        "UTOWN"
+    ],
+    "MD3": [
+        "LT27",
+        "S17"
+    ],
+    "MD6": [
+        "LT27",
+        "S17"
+    ],
+    "COM3": [
+        "COM3",
+        "BIZ2"
+    ],
+    "Ambition II": [
+        "UTOWN",
+        "MUSEUM"
+    ],
+    "SDE3": [
+        "SDE3-OPP",
+        "CLB"
+    ],
+    "CLB": [
+        "CLB",
+        "IT"
+    ],
+    "KRH-READRM": [
+        "PGP",
+        "HSSML-OPP",
+        "PGP Foyer"
+    ],
+    "SDE1": [
+        "RAFFLES",
+        "MUSEUM",
+        "SDE3-OPP"
+    ],
+    "LT35": [
+        "CLB",
+        "IT"
+    ],
+    "S4": [
+        "CLB",
+        "IT"
+    ],
+    "YSTCM": [
+        "CLB",
+        "IT"
+    ],
+    "E-Hybrid-A": [
+        "CLB",
+        "IT"
+    ],
+    "COM4": [
+        "COM3",
+        "BIZ2"
+    ],
+    "E8": [
+        "CLB",
+        "IT"
+    ],
+    "CELC": [
+        "CLB",
+        "IT"
+    ],
+    "S1": [
+        "LT27",
+        "S17"
+    ]
+}

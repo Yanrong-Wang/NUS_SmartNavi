@@ -1,13 +1,13 @@
 {
     "PickupPointResult": {
-        "90287": [
+        "A1": [
             {
                 "routeid": 90287,
                 "seq": 1,
                 "pickupname": "Kent Ridge Bus Terminal",
                 "LongName": "Kent Ridge Bus Terminal",
                 "ShortName": "KR Bus Ter",
-                "busstopcode": "KRB-A1-S",
+                "busstopcode": "KRB",
                 "lat": 1.294068,
                 "lng": 103.769836
             },
@@ -127,19 +127,19 @@
                 "pickupname": "Kent Ridge Bus Terminal",
                 "LongName": "Kent Ridge Bus Terminal",
                 "ShortName": "KR Bus Ter",
-                "busstopcode": "KRB-A1-E",
+                "busstopcode": "KRB",
                 "lat": 1.294536,
                 "lng": 103.77
             }
         ],
-        "90289": [
+        "A2": [
             {
                 "routeid": 90289,
                 "seq": 1,
                 "pickupname": "Kent Ridge Bus Terminal",
                 "LongName": "Kent Ridge Bus Terminal",
                 "ShortName": "KR Bus Ter",
-                "busstopcode": "KRB-A2-S",
+                "busstopcode": "KRB",
                 "lat": 1.293823,
                 "lng": 103.769671
             },
@@ -269,12 +269,12 @@
                 "pickupname": "Kent Ridge Bus Terminal",
                 "LongName": "Kent Ridge Bus Terminal",
                 "ShortName": "KR Bus Ter",
-                "busstopcode": "KRB-A2-E",
+                "busstopcode": "KRB",
                 "lat": 1.29443,
                 "lng": 103.769997
             }
         ],
-        "90294": [
+        "D1": [
             {
                 "routeid": 90294,
                 "seq": 1,
@@ -411,19 +411,19 @@
                 "pickupname": "COM 3",
                 "LongName": "COM 3",
                 "ShortName": "COM 3",
-                "busstopcode": "COM3-D1-E",
+                "busstopcode": "COM3",
                 "lat": 1.294431,
                 "lng": 103.775217
             }
         ], 
-        "90295": [
+        "D2": [
             {
                 "routeid": 90295,
                 "seq": 1,
                 "pickupname": "COM 3",
                 "LongName": "COM 3",
                 "ShortName": "COM 3",
-                "busstopcode": "COM3-D2-S",
+                "busstopcode": "COM3",
                 "lat": 1.294431,
                 "lng": 103.775217
             },
@@ -573,12 +573,12 @@
                 "pickupname": "COM 3",
                 "LongName": "COM 3",
                 "ShortName": "COM 3",
-                "busstopcode": "COM3-D2-E",
+                "busstopcode": "COM3",
                 "lat": 1.294431,
                 "lng": 103.775217
             }
         ],
-        "90297": [
+        "K": [
             {
                 "routeid": 90297,
                 "seq": 1,
@@ -740,14 +740,14 @@
                 "lng": 103.781153
             }
         ], 
-        "90292": [
+        "BTC": [
             {
                 "routeid": 90292,
                 "seq": 1,
                 "pickupname": "Oei Tiong Ham Building",
                 "LongName": "Oei Tiong Ham Building",
                 "ShortName": "OTH Bldg",
-                "busstopcode": "OTH-BTC-S",
+                "busstopcode": "OTH",
                 "lat": 1.319705,
                 "lng": 103.817917
             },
@@ -917,7 +917,7 @@
                 "pickupname": "Oei Tiong Ham Building",
                 "LongName": "Oei Tiong Ham Building",
                 "ShortName": "OTH Bldg",
-                "busstopcode": "OTH-BTC-E",
+                "busstopcode": "OTH",
                 "lat": 1.319333,
                 "lng": 103.818262
             }
