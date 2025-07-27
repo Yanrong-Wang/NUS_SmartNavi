@@ -27,10 +27,6 @@ class HomePage extends StatelessWidget {
               label: 'Schedule',
             ),
             NavigationDestination(
-              icon: Icon(Icons.location_on),
-              label: 'Nearby',
-            ),
-            NavigationDestination(
               icon: Icon(Icons.settings),
               label: 'Settings',
             ),
