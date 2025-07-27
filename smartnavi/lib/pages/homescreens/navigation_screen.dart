@@ -36,9 +36,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
     });
   }
 
-  // 这个方法保持不变
   Future<void> _performSearch() async {
-    // 我们使用 Controller 中的文本进行搜索
+    // Search by start and end stations
     if (_isLoading) return;
     setState(() {
       _isLoading = true;
@@ -65,7 +64,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Route Search'), centerTitle: true),
-      // 如果我们还在获取站点列表，就显示一个加载动画
+      // Show a loading indicator while fetching station names
       body: _isFetchingStations
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -73,6 +72,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Start Station Autocomplete Field
                   _buildAutocompleteField(
                     controller: _startStationController,
                     labelText: 'Start Station',
@@ -80,7 +80,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // --- 终点站的自动补全输入框 ---
+                  // End Station Autocomplete Field
                   _buildAutocompleteField(
                     controller: _endStationController,
                     labelText: 'End Station',
@@ -88,7 +88,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // 查询按钮和结果显示区域保持不变
+                  // Search Button
                   ElevatedButton(
                     onPressed: _isLoading ? null : _performSearch,
                     style: ElevatedButton.styleFrom(
@@ -124,39 +124,38 @@ class _NavigationScreenState extends State<NavigationScreen> {
     );
   }
 
-  // --- 创建一个辅助方法来避免代码重复 ---
+  // A helper method to build the autocomplete text field
   Widget _buildAutocompleteField({
     required TextEditingController controller,
     required String labelText,
     required String hintText,
   }) {
     return Autocomplete<String>(
-      // 1. optionsBuilder: 这是实现过滤的核心。
+      // 1. optionsBuilder
       optionsBuilder: (TextEditingValue textEditingValue) {
-        // 如果输入框是空的，就不显示任何建议。
+        // If the input is empty, return an empty list.
         if (textEditingValue.text == '') {
           return const Iterable<String>.empty();
         }
-        // 过滤所有站点的列表。
+        // Otherwise, filter the station names based on the input.
         return _allStationNames.where((String option) {
-          // 使用 toLowerCase() 来实现不区分大小写的搜索
+          // Use the `toLowerCase` method to make the search not case-insensitive.
           return option.toLowerCase().contains(
             textEditingValue.text.toLowerCase(),
           );
         });
       },
 
-      // 这个 builder 用于构建建议列表的视图。
-      // 我们自定义它来显示“未找到”的消息。
+      // Builder is used to display the suggestions.
       optionsViewBuilder: (context, onSelected, options) {
-        // 如果 options 列表为空 (意味着没有匹配项)，并且用户已经输入了文字
+        // If there are no options, show a message.
         if (options.isEmpty && controller.text.isNotEmpty) {
           return Material(
             elevation: 4.0,
             child: ListTile(title: Text('No station found.')),
           );
         }
-        // 否则，显示正常的建议列表。
+        // Otherwise, show the list of options.
         return Material(
           elevation: 4.0,
           child: ListView(
@@ -175,14 +174,13 @@ class _NavigationScreenState extends State<NavigationScreen> {
         );
       },
 
-      // 2. onSelected: 当用户从建议列表中选择一项时被调用。
+      // 2. onSelected: when an option is selected.
       onSelected: (String selection) {
-        // 当选项被选中时，更新我们自己的 Controller 的文本。
         controller.text = selection;
         debugPrint('You just selected $selection');
       },
 
-      // 3. fieldViewBuilder: 用于自定义输入框本身的外观。
+      // 3. fieldViewBuilder to customize the text field.
       fieldViewBuilder:
           (
             BuildContext context,
@@ -190,10 +188,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
             FocusNode fieldFocusNode,
             VoidCallback onFieldSubmitted,
           ) {
-            // Autocomplete 内部有自己的 controller (fieldController),
-            // 但为了能在外部通过"Search"按钮获取值，我们在这里使用我们自己传入的 controller。
+            // Use the provided controller instead of the one from Autocomplete.
             return TextField(
-              controller: controller, // 使用我们传入的 controller
+              controller: controller, // Use the controller we passed in
               focusNode: fieldFocusNode,
               decoration: InputDecoration(
                 labelText: labelText,
