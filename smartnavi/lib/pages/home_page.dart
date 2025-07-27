@@ -12,7 +12,6 @@ class HomePage extends StatelessWidget {
       routes: const [
         NavigationRoute(),
         ScheduleRoute(),
-        NearbyRoute(),
         SettingRoute(),
       ],
       bottomNavigationBuilder: (_, tabsRouter) {
@@ -26,10 +25,6 @@ class HomePage extends StatelessWidget {
             NavigationDestination(
               icon: Icon(Icons.calendar_today),
               label: 'Schedule',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.location_on),
-              label: 'Nearby',
             ),
             NavigationDestination(
               icon: Icon(Icons.settings),
