@@ -1,6 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import '../../services/firestore_service.dart';
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
+import '../../services/findBus.dart';
+import '../../services/arriveTime.dart';
 
 @RoutePage()
 class NavigationScreen extends StatefulWidget {
@@ -13,7 +16,6 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> {
   final TextEditingController _startStationController = TextEditingController();
   final TextEditingController _endStationController = TextEditingController();
-  final FirestoreService _firebaseService = FirestoreService();
 
   List<String> _allStationNames = [];
   bool _isFetchingStations = true;
@@ -30,26 +32,53 @@ class _NavigationScreenState extends State<NavigationScreen> {
     setState(() {
       _isFetchingStations = true;
     });
-    _allStationNames = await _firebaseService.getStationNames();
+    // 从 assets/buildings.json 读取所有 key 作为站点名
+    final String data = await rootBundle.loadString(
+      'smartnavi/assets/buildings.json',
+    );
+    final Map<String, dynamic> jsonData = json.decode(data);
+    _allStationNames = jsonData.keys.map((e) => e.toString()).toList();
     setState(() {
       _isFetchingStations = false;
     });
   }
 
-  // 这个方法保持不变
   Future<void> _performSearch() async {
-    // 我们使用 Controller 中的文本进行搜索
     if (_isLoading) return;
     setState(() {
       _isLoading = true;
       _searchResult = null;
     });
-    final result = await _firebaseService.searchRoute(
-      _startStationController.text,
-      _endStationController.text,
-    );
+    final start = _startStationController.text.trim();
+    final end = _endStationController.text.trim();
+    if (start.isEmpty || end.isEmpty) {
+      setState(() {
+        _searchResult = 'Please enter both start and end station.';
+        _isLoading = false;
+      });
+      return;
+    }
+    final busService = BusService();
+    final routes = await busService.findBusRoutes(start, end);
+    if (routes.isEmpty) {
+      setState(() {
+        _searchResult = 'No direct bus route found.';
+        _isLoading = false;
+      });
+      return;
+    }
+    // 查询每条路线的到站时间
+    String resultText = '';
+    for (final route in routes) {
+      final eta = await getNextBusArrival(start, route);
+      if (eta != null) {
+        resultText += 'Bus $route: $eta min\n';
+      } else {
+        resultText += 'Bus $route: No arrival info\n';
+      }
+    }
     setState(() {
-      _searchResult = result;
+      _searchResult = resultText.trim();
       _isLoading = false;
     });
   }
@@ -110,7 +139,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha:0.1),
+                        color: Colors.blue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
