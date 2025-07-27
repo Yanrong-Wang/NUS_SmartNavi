@@ -2,70 +2,85 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/schedule_model.dart';
 
 class FirestoreService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  //final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final CollectionReference _schedulesCollection = 
+      FirebaseFirestore.instance.collection('schedules');
 
   // Get a stream of all schedules
   Stream<List<Schedule>> getSchedules() {
-    return _db
-        .collection('schedules')
+    return _schedulesCollection
+        .orderBy('eventDate', descending: false)
         .snapshots()
-        .map(
-          (snapshot) =>
-              snapshot.docs.map((doc) => Schedule.fromFirestore(doc)).toList(),
-        );
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Schedule.fromFirestore(doc))
+            .toList());
   }
 
   // Add a new schedule
-  Future<void> addSchedule(Schedule schedule) {
-    return _db.collection('schedules').add(schedule.toFirestore());
+  Future<void> addSchedule(Schedule schedule) async {
+    try {
+      await _schedulesCollection.add(schedule.toFirestore());
+    } catch (e) {
+      throw Exception('Failed to add schedule: $e');
+    }
   }
 
-  // Update a schedule
-  Future<void> updateSchedule(String id, Schedule schedule) {
-    return _db.collection('schedules').doc(id).update(schedule.toFirestore());
+  // Update a schedule 
+  Future<void> updateSchedule(Schedule schedule) async {
+    try {
+      await _schedulesCollection.doc(schedule.id).update(schedule.toFirestore());
+    } catch (e) {
+      throw Exception('Failed to update schedule: $e');
+    }
   }
 
   // Delete a schedule
-  Future<void> deleteSchedule(String id) {
-    return _db.collection('schedules').doc(id).delete();
-  }
-
-  // Fetch all station names from Firestore
-  Future<List<String>> getStationNames() async {
+  Future<void> deleteSchedule(String id) async {
     try {
-      final snapshot = await _db.collection('Venues').get();
-      // Map the documents to a list of names
-      final stationNames = snapshot.docs
-          .map((doc) => doc.data()['name'] as String)
-          .toList();
-      return stationNames;
+      await _schedulesCollection.doc(id).delete();
     } catch (e) {
-      print("Error fetching station names: $e");
-      // Return an empty list in case of an error
-      return [];
+      throw Exception('Failed to delete schedule: $e');
     }
   }
 
-  // Search for a route between two stations
-  Future<String?> searchRoute(String startStation, String endStation) async {
-    if (startStation.trim().isEmpty || endStation.trim().isEmpty) {
-      return "Please select a valid start and end station.";
-    }
-    final String docId = '${startStation.trim()}_${endStation.trim()}';
+  Future<Schedule?> getScheduleById(String scheduleId) async {
     try {
-      final DocumentSnapshot routeDoc = await _db
-          .collection('Routes')
-          .doc(docId)
-          .get();
-      if (routeDoc.exists) {
-        final data = routeDoc.data() as Map<String, dynamic>?;
-        return data?['Bus_name'] as String? ?? "Data format error";
-      } else {
-        return "No direct route found from $startStation to $endStation.";
+      DocumentSnapshot doc = await _schedulesCollection.doc(scheduleId).get();
+      if (doc.exists) {
+        return Schedule.fromFirestore(doc);
       }
+      return null;
     } catch (e) {
-      print("Error searching route: $e");
-      return "Query failed. Please check your network connection and try again.";
+      throw Exception('Failed to get schedule: $e');
     }
+  }
+
+  // Get upcoming schedules
+  Stream<List<Schedule>> getUpcomingSchedules() {
+    return _schedulesCollection
+        .where('eventDate', isGreaterThan: Timestamp.now())
+        .orderBy('eventDate', descending: false)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Schedule.fromFirestore(doc))
+            .toList());
+  }
+
+  // Get today's schedules
+  Stream<List<Schedule>> getTodaySchedules() {
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    
+    return _schedulesCollection
+        .where('eventDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where('eventDate', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
+        .orderBy('eventDate', descending: false)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Schedule.fromFirestore(doc))
+            .toList());
   }
 }
+
+

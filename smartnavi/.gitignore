@@ -43,3 +43,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+echo "
+# Flutter metadata
+.metadata
+
+# Log files
+pglite-debug.log
+*.log
+
+# Flutter generated files
+.flutter-plugins-dependencies" >> .gitignore
