@@ -12,7 +12,6 @@ class HomePage extends StatelessWidget {
       routes: const [
         NavigationRoute(),
         ScheduleRoute(),
-        NearbyRoute(),
         SettingRoute(),
       ],
       bottomNavigationBuilder: (_, tabsRouter) {

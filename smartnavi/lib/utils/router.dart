@@ -25,10 +25,6 @@ class AppRouter extends RootStackRouter {
           initial: true,
         ),
         AutoRoute(
-          path: "nearby", 
-          page: NearbyRoute.page,
-        ),
-        AutoRoute(
           path: "schedule", 
           page: ScheduleRoute.page,
         ),

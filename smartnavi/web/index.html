@@ -1,6 +1,92 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script>
+// Modern Notification API implementation
+(function() {
+  'use strict';
+  
+  const notifications = new Map();
+  
+  // Check if Notification API is available
+  window._hasNotificationAPI = function() {
+    return 'Notification' in window;
+  };
+  
+  // Get current notification permission
+  window._getNotificationPermission = function() {
+    if (!window._hasNotificationAPI()) return 'denied';
+    return Notification.permission || 'default';
+  };
+  
+  // Request notification permission
+  window._requestNotificationPermissionAsync = function(callback) {
+    if (!window._hasNotificationAPI()) {
+      callback('denied');
+      return;
+    }
+    
+    Notification.requestPermission().then(function(permission) {
+      callback(permission || 'denied');
+    }).catch(function() {
+      callback('denied');
+    });
+  };
+  
+  // Create notification
+  window._createNotification = function(title, body, icon, tag, requireInteraction, id, onClickCallback, onCloseCallback) {
+    try {
+      const options = {
+        body: body,
+        icon: icon,
+        tag: tag,
+        requireInteraction: requireInteraction,
+        silent: false,
+        data: {
+          id: id,
+          timestamp: Date.now()
+        }
+      };
+      
+      const notification = new Notification(title, options);
+      notifications.set(id, notification);
+      
+      // Handle click
+      notification.addEventListener('click', function() {
+        onClickCallback(id, title);
+      });
+      
+      // Handle close
+      notification.addEventListener('close', function() {
+        notifications.delete(id);
+        onCloseCallback(id);
+      });
+      
+      // Handle error
+      notification.addEventListener('error', function(e) {
+        console.error('Notification error:', e);
+        notifications.delete(id);
+      });
+      
+      console.log('Notification created:', title, 'ID:', id);
+      
+    } catch (error) {
+      console.error('Failed to create notification:', error);
+    }
+  };
+  
+  // Close notification
+  window._closeNotification = function(id) {
+    const notification = notifications.get(id);
+    if (notification) {
+      notification.close();
+      notifications.delete(id);
+    }
+  };
+  
+  console.log('Modern Notification API initialized');
+})();
+</script>
   <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.

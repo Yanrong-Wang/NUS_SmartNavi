@@ -16,7 +16,6 @@ import 'package:smartnavi/pages/auth_page.dart' as _i2;
 import 'package:smartnavi/pages/edit_schedule_screen.dart' as _i3;
 import 'package:smartnavi/pages/home_page.dart' as _i4;
 import 'package:smartnavi/pages/homescreens/navigation_screen.dart' as _i5;
-import 'package:smartnavi/pages/homescreens/nearby_screen.dart' as _i6;
 import 'package:smartnavi/pages/homescreens/schedule_screen.dart' as _i7;
 import 'package:smartnavi/pages/homescreens/setting_screen.dart' as _i8;
 
@@ -127,22 +126,6 @@ class NavigationRoute extends _i9.PageRouteInfo<void> {
     name,
     builder: (data) {
       return const _i5.NavigationScreen();
-    },
-  );
-}
-
-/// generated route for
-/// [_i6.NearbyScreen]
-class NearbyRoute extends _i9.PageRouteInfo<void> {
-  const NearbyRoute({List<_i9.PageRouteInfo>? children})
-    : super(NearbyRoute.name, initialChildren: children);
-
-  static const String name = 'NearbyRoute';
-
-  static _i9.PageInfo page = _i9.PageInfo(
-    name,
-    builder: (data) {
-      return const _i6.NearbyScreen();
     },
   );
 }
