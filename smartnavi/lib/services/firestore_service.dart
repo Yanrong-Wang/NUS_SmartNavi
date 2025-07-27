@@ -290,7 +290,7 @@ class FirestoreService {
   /// Send urgent notification
   void _sendUrgentNotification(Schedule schedule, int minutes) {
     sendImmediateNotification(
-      title: 'Class Starting Soon!',
+      title: 'Event Starting Soon!',
       body: '${schedule.title} starts in $minutes minute${minutes == 1 ? '' : 's'} at ${schedule.locationName}',
       tag: 'urgent_${schedule.id}',
       requireInteraction: true,
