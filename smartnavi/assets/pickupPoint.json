@@ -1,0 +1,926 @@
+{
+    "PickupPointResult": {
+        "90287": [
+            {
+                "routeid": 90287,
+                "seq": 1,
+                "pickupname": "Kent Ridge Bus Terminal",
+                "LongName": "Kent Ridge Bus Terminal",
+                "ShortName": "KR Bus Ter",
+                "busstopcode": "KRB-A1-S",
+                "lat": 1.294068,
+                "lng": 103.769836
+            },
+            {
+                "routeid": 90287,
+                "seq": 2,
+                "pickupname": "LT 13",
+                "LongName": "LT 13",
+                "ShortName": "LT 13",
+                "busstopcode": "LT13",
+                "lat": 1.294552,
+                "lng": 103.770635
+            },
+            {
+                "routeid": 90287,
+                "seq": 3,
+                "pickupname": "AS 5",
+                "LongName": "AS 5",
+                "ShortName": "AS 5",
+                "busstopcode": "AS5",
+                "lat": 1.293619,
+                "lng": 103.771475
+            },
+            {
+                "routeid": 90287,
+                "seq": 4,
+                "pickupname": "BIZ 2",
+                "LongName": "BIZ 2",
+                "ShortName": "BIZ 2",
+                "busstopcode": "BIZ2",
+                "lat": 1.293223,
+                "lng": 103.775068
+            },
+            {
+                "routeid": 90287,
+                "seq": 5,
+                "pickupname": "Opp TCOMS",
+                "LongName": "Opp TCOMS",
+                "ShortName": "Opp TCOMS",
+                "busstopcode": "TCOMS-OPP",
+                "lat": 1.293789,
+                "lng": 103.776715
+            },
+            {
+                "routeid": 90287,
+                "seq": 6,
+                "pickupname": "Prince George's Park",
+                "LongName": "Prince George's Park",
+                "ShortName": "PGP",
+                "busstopcode": "PGP",
+                "lat": 1.291765,
+                "lng": 103.780419
+            },
+            {
+                "routeid": 90287,
+                "seq": 7,
+                "pickupname": "Kent Ridge MRT",
+                "LongName": "Kent Ridge MRT",
+                "ShortName": "KR MRT",
+                "busstopcode": "KR-MRT",
+                "lat": 1.294748,
+                "lng": 103.784331
+            },
+            {
+                "routeid": 90287,
+                "seq": 8,
+                "pickupname": "LT 27",
+                "LongName": "LT 27",
+                "ShortName": "LT 27",
+                "busstopcode": "LT27",
+                "lat": 1.297266,
+                "lng": 103.780943
+            },
+            {
+                "routeid": 90287,
+                "seq": 9,
+                "pickupname": "University Hall",
+                "LongName": "University Hall",
+                "ShortName": "UHall",
+                "busstopcode": "UHALL",
+                "lat": 1.297252,
+                "lng": 103.778049
+            },
+            {
+                "routeid": 90287,
+                "seq": 10,
+                "pickupname": "Opp University Health Centre",
+                "LongName": "Opp University Health Centre",
+                "ShortName": "Opp UHC",
+                "busstopcode": "UHC-OPP",
+                "lat": 1.298695,
+                "lng": 103.775616
+            },
+            {
+                "routeid": 90287,
+                "seq": 11,
+                "pickupname": "Yusof Ishak House",
+                "LongName": "Yusof Ishak House",
+                "ShortName": "YIH",
+                "busstopcode": "YIH",
+                "lat": 1.298885,
+                "lng": 103.774377
+            },
+            {
+                "routeid": 90287,
+                "seq": 12,
+                "pickupname": "Central Library",
+                "LongName": "Central Library",
+                "ShortName": "CLB",
+                "busstopcode": "CLB",
+                "lat": 1.296544,
+                "lng": 103.772569
+            },
+            {
+                "routeid": 90287,
+                "seq": 32767,
+                "pickupname": "Kent Ridge Bus Terminal",
+                "LongName": "Kent Ridge Bus Terminal",
+                "ShortName": "KR Bus Ter",
+                "busstopcode": "KRB-A1-E",
+                "lat": 1.294536,
+                "lng": 103.77
+            }
+        ],
+        "90289": [
+            {
+                "routeid": 90289,
+                "seq": 1,
+                "pickupname": "Kent Ridge Bus Terminal",
+                "LongName": "Kent Ridge Bus Terminal",
+                "ShortName": "KR Bus Ter",
+                "busstopcode": "KRB-A2-S",
+                "lat": 1.293823,
+                "lng": 103.769671
+            },
+            {
+                "routeid": 90289,
+                "seq": 2,
+                "pickupname": "Information Technology",
+                "LongName": "Information Technology",
+                "ShortName": "IT",
+                "busstopcode": "IT",
+                "lat": 1.297204,
+                "lng": 103.772688
+            },
+            {
+                "routeid": 90289,
+                "seq": 3,
+                "pickupname": "Opp Yusof Ishak House",
+                "LongName": "Opp Yusof Ishak House",
+                "ShortName": "Opp YIH",
+                "busstopcode": "YIH-OPP",
+                "lat": 1.298904,
+                "lng": 103.774118
+            },
+            {
+                "routeid": 90289,
+                "seq": 4,
+                "pickupname": "Museum",
+                "LongName": "Museum",
+                "ShortName": "Museum",
+                "busstopcode": "MUSEUM",
+                "lat": 1.301081,
+                "lng": 103.77369
+            },
+            {
+                "routeid": 90289,
+                "seq": 5,
+                "pickupname": "University Health Centre",
+                "LongName": "University Health Centre",
+                "ShortName": "UHC",
+                "busstopcode": "UHC",
+                "lat": 1.29891,
+                "lng": 103.776103
+            },
+            {
+                "routeid": 90289,
+                "seq": 6,
+                "pickupname": "Opp University Hall",
+                "LongName": "Opp University Hall",
+                "ShortName": "Opp UHall",
+                "busstopcode": "UHALL-OPP",
+                "lat": 1.297518,
+                "lng": 103.77813
+            },
+            {
+                "routeid": 90289,
+                "seq": 7,
+                "pickupname": "S 17",
+                "LongName": "S 17",
+                "ShortName": "S 17",
+                "busstopcode": "S17",
+                "lat": 1.29756,
+                "lng": 103.780718
+            },
+            {
+                "routeid": 90289,
+                "seq": 8,
+                "pickupname": "Opp Kent Ridge MRT",
+                "LongName": "Opp Kent Ridge MRT",
+                "ShortName": "Opp KR MRT",
+                "busstopcode": "KR-MRT-OPP",
+                "lat": 1.294923,
+                "lng": 103.784603
+            },
+            {
+                "routeid": 90289,
+                "seq": 9,
+                "pickupname": "Prince George's Park Foyer",
+                "LongName": "Prince George's Park Foyer",
+                "ShortName": "PGP Foyer",
+                "busstopcode": "PGPR",
+                "lat": 1.290969,
+                "lng": 103.78109
+            },
+            {
+                "routeid": 90289,
+                "seq": 10,
+                "pickupname": "TCOMS",
+                "LongName": "TCOMS",
+                "ShortName": "TCOMS",
+                "busstopcode": "TCOMS",
+                "lat": 1.293654,
+                "lng": 103.776898
+            },
+            {
+                "routeid": 90289,
+                "seq": 11,
+                "pickupname": "Opp HSSML",
+                "LongName": "Opp Hon Sui Sen Memorial Library",
+                "ShortName": "Opp HSSML",
+                "busstopcode": "HSSML-OPP",
+                "lat": 1.292798,
+                "lng": 103.774978
+            },
+            {
+                "routeid": 90289,
+                "seq": 12,
+                "pickupname": "Opp NUSS",
+                "LongName": "Opp NUSS",
+                "ShortName": "Opp NUSS",
+                "busstopcode": "NUSS-OPP",
+                "lat": 1.293208,
+                "lng": 103.772618
+            },
+            {
+                "routeid": 90289,
+                "seq": 13,
+                "pickupname": "Ventus",
+                "LongName": "Ventus",
+                "ShortName": "Ventus",
+                "busstopcode": "LT13-OPP",
+                "lat": 1.29534,
+                "lng": 103.770617
+            },
+            {
+                "routeid": 90289,
+                "seq": 32767,
+                "pickupname": "Kent Ridge Bus Terminal",
+                "LongName": "Kent Ridge Bus Terminal",
+                "ShortName": "KR Bus Ter",
+                "busstopcode": "KRB-A2-E",
+                "lat": 1.29443,
+                "lng": 103.769997
+            }
+        ],
+        "90294": [
+            {
+                "routeid": 90294,
+                "seq": 1,
+                "pickupname": "COM 3",
+                "LongName": "COM 3",
+                "ShortName": "COM 3",
+                "busstopcode": "COM3-D1-S",
+                "lat": 1.294431,
+                "lng": 103.775217
+            },
+            {
+                "routeid": 90294,
+                "seq": 2,
+                "pickupname": "Opp HSSML",
+                "LongName": "Opp Hon Sui Sen Memorial Library",
+                "ShortName": "Opp HSSML",
+                "busstopcode": "HSSML-OPP",
+                "lat": 1.292798,
+                "lng": 103.774978
+            },
+            {
+                "routeid": 90294,
+                "seq": 3,
+                "pickupname": "Opp NUSS",
+                "LongName": "Opp NUSS",
+                "ShortName": "Opp NUSS",
+                "busstopcode": "NUSS-OPP",
+                "lat": 1.293208,
+                "lng": 103.772618
+            },
+            {
+                "routeid": 90294,
+                "seq": 4,
+                "pickupname": "Ventus",
+                "LongName": "Ventus",
+                "ShortName": "Ventus",
+                "busstopcode": "LT13-OPP",
+                "lat": 1.29534,
+                "lng": 103.770617
+            },
+            {
+                "routeid": 90294,
+                "seq": 5,
+                "pickupname": "Information Technology",
+                "LongName": "Information Technology",
+                "ShortName": "IT",
+                "busstopcode": "IT",
+                "lat": 1.297204,
+                "lng": 103.772688
+            },
+            {
+                "routeid": 90294,
+                "seq": 6,
+                "pickupname": "Opp Yusof Ishak House",
+                "LongName": "Opp Yusof Ishak House",
+                "ShortName": "Opp YIH",
+                "busstopcode": "YIH-OPP",
+                "lat": 1.298904,
+                "lng": 103.77412
+            },
+            {
+                "routeid": 90294,
+                "seq": 7,
+                "pickupname": "Museum",
+                "LongName": "Museum",
+                "ShortName": "Museum",
+                "busstopcode": "MUSEUM",
+                "lat": 1.301081,
+                "lng": 103.77369
+            },
+            {
+                "routeid": 90294,
+                "seq": 8,
+                "pickupname": "University Town",
+                "LongName": "University Town",
+                "ShortName": "UTown",
+                "busstopcode": "UTOWN",
+                "lat": 1.303876,
+                "lng": 103.774621
+            },
+            {
+                "routeid": 90294,
+                "seq": 9,
+                "pickupname": "Yusof Ishak House",
+                "LongName": "Yusof Ishak House",
+                "ShortName": "YIH",
+                "busstopcode": "YIH",
+                "lat": 1.298883,
+                "lng": 103.774377
+            },
+            {
+                "routeid": 90294,
+                "seq": 10,
+                "pickupname": "Central Library",
+                "LongName": "Central Library",
+                "ShortName": "CLB",
+                "busstopcode": "CLB",
+                "lat": 1.296581,
+                "lng": 103.772494
+            },
+            {
+                "routeid": 90294,
+                "seq": 11,
+                "pickupname": "LT 13",
+                "LongName": "LT 13",
+                "ShortName": "LT 13",
+                "busstopcode": "LT13",
+                "lat": 1.294552,
+                "lng": 103.770635
+            },
+            {
+                "routeid": 90294,
+                "seq": 12,
+                "pickupname": "AS 5",
+                "LongName": "AS 5",
+                "ShortName": "AS 5",
+                "busstopcode": "AS5",
+                "lat": 1.293619,
+                "lng": 103.771475
+            },
+            {
+                "routeid": 90294,
+                "seq": 13,
+                "pickupname": "BIZ 2",
+                "LongName": "BIZ 2",
+                "ShortName": "BIZ 2",
+                "busstopcode": "BIZ2",
+                "lat": 1.293223,
+                "lng": 103.775068
+            },
+            {
+                "routeid": 90294,
+                "seq": 32767,
+                "pickupname": "COM 3",
+                "LongName": "COM 3",
+                "ShortName": "COM 3",
+                "busstopcode": "COM3-D1-E",
+                "lat": 1.294431,
+                "lng": 103.775217
+            }
+        ], 
+        "90295": [
+            {
+                "routeid": 90295,
+                "seq": 1,
+                "pickupname": "COM 3",
+                "LongName": "COM 3",
+                "ShortName": "COM 3",
+                "busstopcode": "COM3-D2-S",
+                "lat": 1.294431,
+                "lng": 103.775217
+            },
+            {
+                "routeid": 90295,
+                "seq": 2,
+                "pickupname": "Opp TCOMS",
+                "LongName": "Opp TCOMS",
+                "ShortName": "Opp TCOMS",
+                "busstopcode": "TCOMS-OPP",
+                "lat": 1.293789,
+                "lng": 103.776715
+            },
+            {
+                "routeid": 90295,
+                "seq": 3,
+                "pickupname": "Prince George's Park",
+                "LongName": "Prince George's Park",
+                "ShortName": "PGP",
+                "busstopcode": "PGP",
+                "lat": 1.291765,
+                "lng": 103.780419
+            },
+            {
+                "routeid": 90295,
+                "seq": 4,
+                "pickupname": "Kent Ridge MRT",
+                "LongName": "Kent Ridge MRT",
+                "ShortName": "KR MRT",
+                "busstopcode": "KR-MRT",
+                "lat": 1.29483,
+                "lng": 103.784439
+            },
+            {
+                "routeid": 90295,
+                "seq": 5,
+                "pickupname": "LT 27",
+                "LongName": "LT 27",
+                "ShortName": "LT 27",
+                "busstopcode": "LT27",
+                "lat": 1.297421,
+                "lng": 103.780941
+            },
+            {
+                "routeid": 90295,
+                "seq": 6,
+                "pickupname": "University Hall",
+                "LongName": "University Hall",
+                "ShortName": "UHall",
+                "busstopcode": "UHALL",
+                "lat": 1.297372,
+                "lng": 103.778075
+            },
+            {
+                "routeid": 90295,
+                "seq": 7,
+                "pickupname": "Opp University Health Centre",
+                "LongName": "Opp University Health Centre",
+                "ShortName": "Opp UHC",
+                "busstopcode": "UHC-OPP",
+                "lat": 1.298788,
+                "lng": 103.775612
+            },
+            {
+                "routeid": 90295,
+                "seq": 8,
+                "pickupname": "Museum",
+                "LongName": "Museum",
+                "ShortName": "Museum",
+                "busstopcode": "MUSEUM",
+                "lat": 1.301081,
+                "lng": 103.77369
+            },
+            {
+                "routeid": 90295,
+                "seq": 9,
+                "pickupname": "University Town",
+                "LongName": "University Town",
+                "ShortName": "UTown",
+                "busstopcode": "UTOWN",
+                "lat": 1.303433,
+                "lng": 103.774326
+            },
+            {
+                "routeid": 90295,
+                "seq": 10,
+                "pickupname": "University Health Centre",
+                "LongName": "University Health Centre",
+                "ShortName": "UHC",
+                "busstopcode": "UHC",
+                "lat": 1.29891,
+                "lng": 103.776103
+            },
+            {
+                "routeid": 90295,
+                "seq": 11,
+                "pickupname": "Opp University Hall",
+                "LongName": "Opp University Hall",
+                "ShortName": "Opp UHall",
+                "busstopcode": "UHALL-OPP",
+                "lat": 1.297574,
+                "lng": 103.778088
+            },
+            {
+                "routeid": 90295,
+                "seq": 12,
+                "pickupname": "S 17",
+                "LongName": "S 17",
+                "ShortName": "S 17",
+                "busstopcode": "S17",
+                "lat": 1.297477,
+                "lng": 103.780718
+            },
+            {
+                "routeid": 90295,
+                "seq": 13,
+                "pickupname": "Opp Kent Ridge MRT",
+                "LongName": "Opp Kent Ridge MRT",
+                "ShortName": "Opp KR MRT",
+                "busstopcode": "KR-MRT-OPP",
+                "lat": 1.294962,
+                "lng": 103.784556
+            },
+            {
+                "routeid": 90295,
+                "seq": 14,
+                "pickupname": "Prince George's Park Foyer",
+                "LongName": "Prince George's Park Foyer",
+                "ShortName": "PGP Foyer",
+                "busstopcode": "PGPR",
+                "lat": 1.291016,
+                "lng": 103.781185
+            },
+            {
+                "routeid": 90295,
+                "seq": 15,
+                "pickupname": "TCOMS",
+                "LongName": "TCOMS",
+                "ShortName": "TCOMS",
+                "busstopcode": "TCOMS",
+                "lat": 1.293654,
+                "lng": 103.776898
+            },
+            {
+                "routeid": 90295,
+                "seq": 32767,
+                "pickupname": "COM 3",
+                "LongName": "COM 3",
+                "ShortName": "COM 3",
+                "busstopcode": "COM3-D2-E",
+                "lat": 1.294431,
+                "lng": 103.775217
+            }
+        ],
+        "90297": [
+            {
+                "routeid": 90297,
+                "seq": 1,
+                "pickupname": "Prince George's Park",
+                "LongName": "Prince George's Park",
+                "ShortName": "PGP",
+                "busstopcode": "PGP",
+                "lat": 1.291765,
+                "lng": 103.780419
+            },
+            {
+                "routeid": 90297,
+                "seq": 2,
+                "pickupname": "Kent Ridge MRT",
+                "LongName": "Kent Ridge MRT",
+                "ShortName": "KR MRT",
+                "busstopcode": "KR-MRT",
+                "lat": 1.29482,
+                "lng": 103.784413
+            },
+            {
+                "routeid": 90297,
+                "seq": 3,
+                "pickupname": "LT 27",
+                "LongName": "LT 27",
+                "ShortName": "LT 27",
+                "busstopcode": "LT27",
+                "lat": 1.297421,
+                "lng": 103.780941
+            },
+            {
+                "routeid": 90297,
+                "seq": 4,
+                "pickupname": "University Hall",
+                "LongName": "University Hall",
+                "ShortName": "UHall",
+                "busstopcode": "UHALL",
+                "lat": 1.297372,
+                "lng": 103.778075
+            },
+            {
+                "routeid": 90297,
+                "seq": 5,
+                "pickupname": "Opp University Health Centre",
+                "LongName": "Opp University Health Centre",
+                "ShortName": "Opp UHC",
+                "busstopcode": "UHC-OPP",
+                "lat": 1.298788,
+                "lng": 103.775612
+            },
+            {
+                "routeid": 90297,
+                "seq": 6,
+                "pickupname": "Yusof Ishak House",
+                "LongName": "Yusof Ishak House",
+                "ShortName": "YIH",
+                "busstopcode": "YIH",
+                "lat": 1.298885,
+                "lng": 103.774377
+            },
+            {
+                "routeid": 90297,
+                "seq": 7,
+                "pickupname": "Central Library",
+                "LongName": "Central Library",
+                "ShortName": "CLB",
+                "busstopcode": "CLB",
+                "lat": 1.296544,
+                "lng": 103.772569
+            },
+            {
+                "routeid": 90297,
+                "seq": 8,
+                "pickupname": "Opp SDE 3",
+                "LongName": "Opp SDE 3",
+                "ShortName": "Opp SDE 3",
+                "busstopcode": "SDE3-OPP",
+                "lat": 1.297799,
+                "lng": 103.769603
+            },
+            {
+                "routeid": 90297,
+                "seq": 9,
+                "pickupname": "The Japanese Primary School",
+                "LongName": "The Japanese Primary School",
+                "ShortName": "Jpn Pr Sch",
+                "busstopcode": "JP-SCH-16151",
+                "lat": 1.30077,
+                "lng": 103.769904
+            },
+            {
+                "routeid": 90297,
+                "seq": 10,
+                "pickupname": "Kent Vale",
+                "LongName": "Kent Vale",
+                "ShortName": "Kent Vale",
+                "busstopcode": "KV",
+                "lat": 1.301899,
+                "lng": 103.769455
+            },
+            {
+                "routeid": 90297,
+                "seq": 11,
+                "pickupname": "Museum",
+                "LongName": "Museum",
+                "ShortName": "Museum",
+                "busstopcode": "MUSEUM",
+                "lat": 1.301081,
+                "lng": 103.77369
+            },
+            {
+                "routeid": 90297,
+                "seq": 12,
+                "pickupname": "University Health Centre",
+                "LongName": "University Health Centre",
+                "ShortName": "UHC",
+                "busstopcode": "UHC",
+                "lat": 1.29891,
+                "lng": 103.776103
+            },
+            {
+                "routeid": 90297,
+                "seq": 13,
+                "pickupname": "Opp University Hall",
+                "LongName": "Opp University Hall",
+                "ShortName": "Opp UHall",
+                "busstopcode": "UHALL-OPP",
+                "lat": 1.297574,
+                "lng": 103.778088
+            },
+            {
+                "routeid": 90297,
+                "seq": 14,
+                "pickupname": "S 17",
+                "LongName": "S 17",
+                "ShortName": "S 17",
+                "busstopcode": "S17",
+                "lat": 1.297488,
+                "lng": 103.780707
+            },
+            {
+                "routeid": 90297,
+                "seq": 15,
+                "pickupname": "Opp Kent Ridge MRT",
+                "LongName": "Opp Kent Ridge MRT",
+                "ShortName": "Opp KR MRT",
+                "busstopcode": "KR-MRT-OPP",
+                "lat": 1.294962,
+                "lng": 103.784556
+            },
+            {
+                "routeid": 90297,
+                "seq": 32767,
+                "pickupname": "Prince George's Park Foyer",
+                "LongName": "Prince George's Park Foyer",
+                "ShortName": "PGP Foyer",
+                "busstopcode": "PGPR",
+                "lat": 1.290994,
+                "lng": 103.781153
+            }
+        ], 
+        "90292": [
+            {
+                "routeid": 90292,
+                "seq": 1,
+                "pickupname": "Oei Tiong Ham Building",
+                "LongName": "Oei Tiong Ham Building",
+                "ShortName": "OTH Bldg",
+                "busstopcode": "OTH-BTC-S",
+                "lat": 1.319705,
+                "lng": 103.817917
+            },
+            {
+                "routeid": 90292,
+                "seq": 2,
+                "pickupname": "Botanic Gardens MRT (PUDO)",
+                "LongName": "Botanic Gardens MRT (PUDO)",
+                "ShortName": "BG MRT",
+                "busstopcode": "BG-MRT",
+                "lat": 1.322586,
+                "lng": 103.816135
+            },
+            {
+                "routeid": 90292,
+                "seq": 3,
+                "pickupname": "Kent Ridge MRT",
+                "LongName": "Kent Ridge MRT",
+                "ShortName": "KR MRT",
+                "busstopcode": "KR-MRT",
+                "lat": 1.29483,
+                "lng": 103.784439
+            },
+            {
+                "routeid": 90292,
+                "seq": 4,
+                "pickupname": "LT 27",
+                "LongName": "LT 27",
+                "ShortName": "LT 27",
+                "busstopcode": "LT27",
+                "lat": 1.297421,
+                "lng": 103.780941
+            },
+            {
+                "routeid": 90292,
+                "seq": 5,
+                "pickupname": "University Hall",
+                "LongName": "University Hall",
+                "ShortName": "UHall",
+                "busstopcode": "UHALL",
+                "lat": 1.297372,
+                "lng": 103.778075
+            },
+            {
+                "routeid": 90292,
+                "seq": 6,
+                "pickupname": "Opp University Health Centre",
+                "LongName": "Opp University Health Centre",
+                "ShortName": "Opp UHC",
+                "busstopcode": "UHC-OPP",
+                "lat": 1.298788,
+                "lng": 103.775612
+            },
+            {
+                "routeid": 90292,
+                "seq": 7,
+                "pickupname": "University Town",
+                "LongName": "University Town",
+                "ShortName": "UTown",
+                "busstopcode": "UTOWN",
+                "lat": 1.303623,
+                "lng": 103.774388
+            },
+            {
+                "routeid": 90292,
+                "seq": 8,
+                "pickupname": "Raffles Hall",
+                "LongName": "Raffles Hall",
+                "ShortName": "Raffles Hall",
+                "busstopcode": "RAFFLES",
+                "lat": 1.300963,
+                "lng": 103.772705
+            },
+            {
+                "routeid": 90292,
+                "seq": 9,
+                "pickupname": "Kent Vale",
+                "LongName": "Kent Vale",
+                "ShortName": "Kent Vale",
+                "busstopcode": "KV",
+                "lat": 1.301899,
+                "lng": 103.769455
+            },
+            {
+                "routeid": 90292,
+                "seq": 10,
+                "pickupname": "Museum",
+                "LongName": "Museum",
+                "ShortName": "Museum",
+                "busstopcode": "MUSEUM",
+                "lat": 1.301081,
+                "lng": 103.77369
+            },
+            {
+                "routeid": 90292,
+                "seq": 11,
+                "pickupname": "Yusof Ishak House",
+                "LongName": "Yusof Ishak House",
+                "ShortName": "YIH",
+                "busstopcode": "YIH",
+                "lat": 1.298876,
+                "lng": 103.774348
+            },
+            {
+                "routeid": 90292,
+                "seq": 12,
+                "pickupname": "Central Library",
+                "LongName": "Central Library",
+                "ShortName": "CLB",
+                "busstopcode": "CLB",
+                "lat": 1.296581,
+                "lng": 103.772494
+            },
+            {
+                "routeid": 90292,
+                "seq": 13,
+                "pickupname": "LT 13",
+                "LongName": "LT 13",
+                "ShortName": "LT 13",
+                "busstopcode": "LT13",
+                "lat": 1.294552,
+                "lng": 103.770635
+            },
+            {
+                "routeid": 90292,
+                "seq": 14,
+                "pickupname": "AS 5",
+                "LongName": "AS 5",
+                "ShortName": "AS 5",
+                "busstopcode": "AS5",
+                "lat": 1.293619,
+                "lng": 103.771475
+            },
+            {
+                "routeid": 90292,
+                "seq": 15,
+                "pickupname": "BIZ 2",
+                "LongName": "BIZ 2",
+                "ShortName": "BIZ 2",
+                "busstopcode": "BIZ2",
+                "lat": 1.293273,
+                "lng": 103.775074
+            },
+            {
+                "routeid": 90292,
+                "seq": 16,
+                "pickupname": "Prince George's Park",
+                "LongName": "Prince George's Park",
+                "ShortName": "PGP",
+                "busstopcode": "PGP",
+                "lat": 1.291765,
+                "lng": 103.780419
+            },
+            {
+                "routeid": 90292,
+                "seq": 17,
+                "pickupname": "College Green",
+                "LongName": "College Green",
+                "ShortName": "College Gr",
+                "busstopcode": "CG",
+                "lat": 1.323345,
+                "lng": 103.816273
+            },
+            {
+                "routeid": 90292,
+                "seq": 32767,
+                "pickupname": "Oei Tiong Ham Building",
+                "LongName": "Oei Tiong Ham Building",
+                "ShortName": "OTH Bldg",
+                "busstopcode": "OTH-BTC-E",
+                "lat": 1.319333,
+                "lng": 103.818262
+            }
+        ]
+    }
+}
