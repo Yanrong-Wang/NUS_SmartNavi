@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:async';
 import 'package:web/web.dart' as web;
 import 'dart:js_interop';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FirestoreService {
   
@@ -18,7 +19,8 @@ class FirestoreService {
   final CollectionReference _routesCollection = 
       FirebaseFirestore.instance.collection('Routes');
   
-  // Schedule related methods
+  // EXISTING SCHEDULE METHODS (unchanged)
+  
   // Get a stream of all schedules
   Stream<List<Schedule>> getSchedules() {
     return _schedulesCollection
@@ -95,12 +97,11 @@ class FirestoreService {
             .toList());
   }
 
-  // Navigation related methods
-  // Get station names for autocomplete
+  // EXISTING NAVIGATION METHODS (unchanged)
+  
   Future<List<String>> getStationNames() async {
     try {
       final snapshot = await _venuesCollection.get();
-      // Map the documents to a list of names
       final stationNames = snapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)
           .map((data) => data['name'] as String)
@@ -108,12 +109,10 @@ class FirestoreService {
       return stationNames;
     } catch (e) {
       print("Error fetching station names: $e");
-      // Return an empty list in case of an error
       return [];
     }
   }
 
-  // Search for a route between two stations
   Future<String?> searchRoute(String startStation, String endStation) async {
     if (startStation.trim().isEmpty || endStation.trim().isEmpty) {
       return "Please select a valid start and end station.";
@@ -136,14 +135,83 @@ class FirestoreService {
     }
   }
 
-
-  // ============== NOTIFICATION PROPERTIES ==============
+  // ENHANCED NOTIFICATION PROPERTIES
   Timer? _notificationTimer;
   bool _notificationPermissionGranted = false;
+  bool _notificationEnabled = true;  // New: App-level notification toggle
   final Set<String> _scheduledNotificationIds = <String>{};
+  
+  // SharedPreferences key for notification settings
+  static const String _notificationEnabledKey = 'notification_enabled';
 
+  // NEW: Notification control methods
+  
+  /// Get notification enabled status from local storage
+  Future<bool> getNotificationEnabled() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _notificationEnabled = prefs.getBool(_notificationEnabledKey) ?? true;
+      return _notificationEnabled;
+    } catch (e) {
+      print('Error getting notification enabled status: $e');
+      return true; // Default to enabled
+    }
+  }
+  
+  /// Set notification enabled status and save to local storage
+  Future<void> setNotificationEnabled(bool enabled) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_notificationEnabledKey, enabled);
+      _notificationEnabled = enabled;
+      
+      if (enabled && _notificationPermissionGranted) {
+        // Start scheduler if notifications are enabled
+        _startNotificationScheduler();
+        print('Notifications: Enabled and scheduler started');
+      } else {
+        // Stop scheduler if notifications are disabled
+        stopNotificationScheduler();
+        print('Notifications: Disabled and scheduler stopped');
+      }
+    } catch (e) {
+      print('Error setting notification enabled status: $e');
+    }
+  }
+  
+  /// Get current browser notification permission status
+  Future<String> getNotificationPermission() async {
+    if (!kIsWeb) return 'not_supported';
+    return await _getCurrentPermission();
+  }
+  
+  /// Request notification permission from browser
+  Future<String> requestNotificationPermission() async {
+    if (!kIsWeb) return 'not_supported';
+    
+    try {
+      String permission = await _requestPermission();
+      _notificationPermissionGranted = (permission == 'granted');
+      
+      if (_notificationPermissionGranted && _notificationEnabled) {
+        _startNotificationScheduler();
+        _sendWelcomeNotification();
+      }
+      
+      return permission;
+    } catch (e) {
+      print('Error requesting notification permission: $e');
+      return 'error';
+    }
+  }
+  
+  /// Check if notifications are fully enabled (permission + app setting)
+  bool isNotificationFullyEnabled() {
+    return _notificationPermissionGranted && _notificationEnabled;
+  }
 
-  /// Notification related methods
+  // MODIFIED NOTIFICATION METHODS
+
   /// Initialize notifications using modern Web API
   Future<bool> initializeNotifications() async {
     if (!kIsWeb) {
@@ -152,6 +220,9 @@ class FirestoreService {
     }
 
     try {
+      // Load notification enabled setting from storage
+      await getNotificationEnabled();
+      
       // Check if notifications are supported
       if (!_isNotificationSupported()) {
         print('Notifications: Browser does not support notifications');
@@ -165,8 +236,11 @@ class FirestoreService {
       switch (currentPermission) {
         case 'granted':
           _notificationPermissionGranted = true;
-          _startNotificationScheduler();
-          print('Notifications: Permission already granted');
+          // Only start scheduler if app-level notifications are also enabled
+          if (_notificationEnabled) {
+            _startNotificationScheduler();
+          }
+          print('Notifications: Permission already granted, enabled: $_notificationEnabled');
           return true;
           
         case 'denied':
@@ -175,19 +249,9 @@ class FirestoreService {
           
         case 'default':
         default:
-          // Request permission from the user
-          String permission = await _requestPermission();
-          _notificationPermissionGranted = (permission == 'granted');
-          
-          if (_notificationPermissionGranted) {
-            _startNotificationScheduler();
-            _sendWelcomeNotification();
-            print('Notifications: Permission granted by user');
-          } else {
-            print('Notifications: Permission denied by user');
-          }
-          
-          return _notificationPermissionGranted;
+          // Don't automatically request permission - let user control this
+          print('Notifications: Permission not requested yet');
+          return false;
       }
       
     } catch (error) {
@@ -196,64 +260,10 @@ class FirestoreService {
     }
   }
 
-  /// Check if notification is supported using modern API
-  bool _isNotificationSupported() {
-    if (!kIsWeb) return false;
-    
-    try {
-      return web.window.navigator.serviceWorker != null && 
-             _checkNotificationAPI();
-    } catch (e) {
-      print('Error checking notification support: $e');
-      return false;
-    }
-  }
-
-  /// Check Notification API availability via JS interop
-  bool _checkNotificationAPI() {
-    try {
-      return _jsHasNotification();
-    } catch (e) {
-      return false;
-    }
-  }
-
-  /// Get current permission status using modern API
-  Future<String> _getCurrentPermission() async {
-    if (!kIsWeb) return 'denied';
-    
-    try {
-      return _jsGetNotificationPermission();
-    } catch (e) {
-      print('Error getting notification permission: $e');
-      return 'denied';
-    }
-  }
-
-  /// Request notification permission using modern API
-  Future<String> _requestPermission() async {
-    if (!kIsWeb) return 'denied';
-    
-    try {
-      return await _jsRequestNotificationPermission();
-    } catch (e) {
-      print('Error requesting notification permission: $e');
-      return 'denied';
-    }
-  }
-
-  /// Start notification scheduler
-  void _startNotificationScheduler() {
-    _notificationTimer?.cancel();
-    _notificationTimer = Timer.periodic(Duration(minutes: 1), (timer) {
-      _checkAndSendUpcomingNotifications();
-    });
-    print('Notifications: Scheduler started');
-  }
-
-  /// Check and send upcoming notifications
+  /// Modified: Check notifications with app-level setting
   void _checkAndSendUpcomingNotifications() async {
-    if (!_notificationPermissionGranted || !kIsWeb) return;
+    // Only send notifications if both permission and app setting allow
+    if (!_notificationPermissionGranted || !_notificationEnabled || !kIsWeb) return;
 
     try {
       final now = DateTime.now();
@@ -287,36 +297,7 @@ class FirestoreService {
     }
   }
 
-  /// Send urgent notification
-  void _sendUrgentNotification(Schedule schedule, int minutes) {
-    sendImmediateNotification(
-      title: 'Event Starting Soon!',
-      body: '${schedule.title} starts in $minutes minute${minutes == 1 ? '' : 's'} at ${schedule.locationName}',
-      tag: 'urgent_${schedule.id}',
-      requireInteraction: true,
-    );
-  }
-
-  /// Send reminder notification
-  void _sendReminderNotification(Schedule schedule, int minutes) {
-    sendImmediateNotification(
-      title: 'Upcoming Event',
-      body: '${schedule.title} starts in $minutes minutes at ${schedule}',
-      tag: 'reminder_${schedule.id}',
-      requireInteraction: false,
-    );
-  }
-
-  /// Send welcome notification
-  void _sendWelcomeNotification() {
-    sendImmediateNotification(
-      title: 'NUS SmartNavi Notification is Ready!',
-      body: 'Notifications enabled! You will receive schedule reminders.',
-      tag: 'welcome_notification',
-    );
-  }
-
-  /// Send immediate notification using modern API
+  /// Modified: Check app setting before sending notification
   void sendImmediateNotification({
     required String title,
     required String body,
@@ -324,8 +305,9 @@ class FirestoreService {
     String? tag,
     bool requireInteraction = false,
   }) {
-    if (!_notificationPermissionGranted || !kIsWeb) {
-      print('Notifications: Not available on this platform');
+    // Check both permission and app setting
+    if (!_notificationPermissionGranted || !_notificationEnabled || !kIsWeb) {
+      print('Notifications: Not enabled or not available');
       return;
     }
 
@@ -356,7 +338,99 @@ class FirestoreService {
     }
   }
 
-  /// Send test notification
+  /// Modified: Get complete notification status
+  Map<String, dynamic> getNotificationStatus() {
+    return {
+      'platform': kIsWeb ? 'web' : 'mobile',
+      'isWeb': kIsWeb,
+      'supported': kIsWeb ? _isNotificationSupported() : false,
+      'browser_permission': _notificationPermissionGranted ? 'granted' : 'not_granted',
+      'app_enabled': _notificationEnabled,  // New: App-level setting status
+      'fully_enabled': isNotificationFullyEnabled(),  // New: Complete enabled status
+      'scheduler_active': _notificationTimer?.isActive ?? false,
+      'scheduled_count': _scheduledNotificationIds.length,
+      'api_version': 'modern_web_api',
+    };
+  }
+
+  // EXISTING NOTIFICATION METHODS (mostly unchanged)
+
+  bool _isNotificationSupported() {
+    if (!kIsWeb) return false;
+    
+    try {
+      return web.window.navigator.serviceWorker != null && 
+             _checkNotificationAPI();
+    } catch (e) {
+      print('Error checking notification support: $e');
+      return false;
+    }
+  }
+
+  bool _checkNotificationAPI() {
+    try {
+      return _jsHasNotification();
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<String> _getCurrentPermission() async {
+    if (!kIsWeb) return 'denied';
+    
+    try {
+      return _jsGetNotificationPermission();
+    } catch (e) {
+      print('Error getting notification permission: $e');
+      return 'denied';
+    }
+  }
+
+  Future<String> _requestPermission() async {
+    if (!kIsWeb) return 'denied';
+    
+    try {
+      return await _jsRequestNotificationPermission();
+    } catch (e) {
+      print('Error requesting notification permission: $e');
+      return 'denied';
+    }
+  }
+
+  void _startNotificationScheduler() {
+    _notificationTimer?.cancel();
+    _notificationTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+      _checkAndSendUpcomingNotifications();
+    });
+    print('Notifications: Scheduler started');
+  }
+
+  void _sendUrgentNotification(Schedule schedule, int minutes) {
+    sendImmediateNotification(
+      title: 'Event Starting Soon!',
+      body: '${schedule.title} starts in $minutes minute${minutes == 1 ? '' : 's'} at ${schedule.locationName}',
+      tag: 'urgent_${schedule.id}',
+      requireInteraction: true,
+    );
+  }
+
+  void _sendReminderNotification(Schedule schedule, int minutes) {
+    sendImmediateNotification(
+      title: 'Upcoming Event',
+      body: '${schedule.title} starts in $minutes minutes at ${schedule.locationName}',
+      tag: 'reminder_${schedule.id}',
+      requireInteraction: false,
+    );
+  }
+
+  void _sendWelcomeNotification() {
+    sendImmediateNotification(
+      title: 'NUS SmartNavi Notification is Ready!',
+      body: 'Notifications enabled! You will receive schedule reminders.',
+      tag: 'welcome_notification',
+    );
+  }
+
   void sendTestNotification() {
     sendImmediateNotification(
       title: 'Test Notification',
@@ -365,21 +439,6 @@ class FirestoreService {
     );
   }
 
-  /// Get notification status
-  Map<String, dynamic> getNotificationStatus() {
-    return {
-      'platform': kIsWeb ? 'web' : 'mobile',
-      'isWeb': kIsWeb,
-      'supported': kIsWeb ? _isNotificationSupported() : false,
-      'permission': kIsWeb ? 'checking...' : 'not_available',
-      'enabled': _notificationPermissionGranted,
-      'scheduler_active': _notificationTimer?.isActive ?? false,
-      'scheduled_count': _scheduledNotificationIds.length,
-      'api_version': 'modern_web_api',
-    };
-  }
-
-  /// Stop notification scheduler
   void stopNotificationScheduler() {
     _notificationTimer?.cancel();
     _notificationTimer = null;
@@ -387,23 +446,20 @@ class FirestoreService {
     print('Notifications: Scheduler stopped');
   }
 
-  /// Dispose resources
   void dispose() {
     stopNotificationScheduler();
   }
 
-  // JS interop methods
-  /// Check if Notification API exists
+  // JS INTEROP METHODS (unchanged)
+  
   bool _jsHasNotification() {
     return _hasNotificationAPI();
   }
 
-  /// Get notification permission
   String _jsGetNotificationPermission() {
     return _getNotificationPermission();
   }
 
-  /// Request notification permission
   Future<String> _jsRequestNotificationPermission() async {
     final completer = Completer<String>();
     
@@ -414,7 +470,6 @@ class FirestoreService {
     return completer.future;
   }
 
-  /// Create notification with modern API
   String _jsCreateNotification(String title, String body, String icon, String tag, bool requireInteraction) {
     final notificationId = 'notif_${DateTime.now().millisecondsSinceEpoch}';
     
@@ -432,19 +487,16 @@ class FirestoreService {
     return notificationId;
   }
 
-  /// Close notification
   void _jsCloseNotification(String notificationId) {
     _closeNotification(notificationId);
   }
 
-  /// Handle notification click
   void _onNotificationClick(String notificationId, String title) {
     print('Notification clicked: $title');
     
     try {
       web.window.focus();
       
-      // Dispatch a custom event with notification details
       final event = web.CustomEvent('notificationClicked', web.CustomEventInit(
         detail: {
           'id': notificationId,
@@ -454,8 +506,6 @@ class FirestoreService {
       ));
       
       web.document.dispatchEvent(event);
-      
-      // Close the notification
       _jsCloseNotification(notificationId);
       
     } catch (e) {
@@ -463,13 +513,13 @@ class FirestoreService {
     }
   }
 
-  /// Handle notification close
   void _onNotificationClose(String notificationId) {
     print('Notification closed: $notificationId');
   }
 }
 
-// External JS functions
+// EXTERNAL JS FUNCTIONS (unchanged)
+
 @JS('window.Notification')
 external JSObject? get _notification;
 
