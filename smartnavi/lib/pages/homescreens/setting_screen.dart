@@ -16,9 +16,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   // App preferences state
   bool _isDarkMode = false;
-  String _selectedLanguage = 'English';
-  bool _busNotifications = true;
-  bool _addToiOSWidget = false;
+  bool _Notifications = true;
 
   @override
   void initState() {
@@ -69,14 +67,7 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
             title: Text(user?.email ?? 'No email'),
-            subtitle: const Text('Tap to edit profile'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              // Navigate to profile edit page
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Profile edit not implemented')),
-              );
-            },
           ),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.red),
@@ -147,94 +138,30 @@ class _SettingScreenState extends State<SettingScreen> {
             },
           ),
 
-          // Language Selection
-          ListTile(
-            leading: const Icon(Icons.language),
-            title: const Text('Language'),
-            subtitle: Text(_selectedLanguage),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Select Language'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      RadioListTile<String>(
-                        title: const Text('English'),
-                        value: 'English',
-                        groupValue: _selectedLanguage,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedLanguage = value!;
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                      RadioListTile<String>(
-                        title: const Text('中文'),
-                        value: '中文',
-                        groupValue: _selectedLanguage,
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedLanguage = value!;
-                          });
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // Bus Notifications
+        
+          // Schedule Notifications
           SwitchListTile(
             secondary: const Icon(Icons.notifications),
-            title: const Text('Bus Arrival Notifications'),
-            subtitle: const Text('Get notified when bus is approaching'),
-            value: _busNotifications,
+            title: const Text('Schedule Notifications'),
+            subtitle: const Text('Get notified when event is approaching'),
+            value: _Notifications,
             onChanged: (value) {
               setState(() {
-                _busNotifications = value;
+                _Notifications = value;
               });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
                     value
-                        ? 'Bus notifications enabled'
-                        : 'Bus notifications disabled',
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // iOS Widget
-          SwitchListTile(
-            secondary: const Icon(Icons.widgets),
-            title: const Text('iOS Home Screen Widget'),
-            subtitle: const Text('Add SmartNavi widget to iOS home screen'),
-            value: _addToiOSWidget,
-            onChanged: (value) {
-              setState(() {
-                _addToiOSWidget = value;
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    value
-                        ? 'Widget will be added to home screen'
-                        : 'Widget removed from home screen',
+                        ? 'Schedule notifications enabled'
+                        : 'Schedule notifications disabled',
                   ),
                 ),
               );
             },
           ),
         ],
-      ),
-    );
-  }
+    ),
+  );
+}
 }
