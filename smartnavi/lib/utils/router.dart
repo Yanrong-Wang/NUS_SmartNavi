@@ -6,23 +6,45 @@ import 'router.gr.dart';
 class AppRouter extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
-    AutoRoute(path: "/auth", page: AuthRoute.page),
+    // Authentication route
+    AutoRoute(
+      path: "/auth", 
+      page: AuthRoute.page,
+    ),
+    
+    // Home route with nested routes
     AutoRoute(
       path: "/",
       page: HomeRoute.page,
       initial: true,
-      guards: [AuthGuard()],
+      guards: [AuthGuard()], 
       children: [
         AutoRoute(
-          path: "navigation",
+          path: "navigation", 
           page: NavigationRoute.page,
           initial: true,
         ),
-        AutoRoute(path: "nearby", page: NearbyRoute.page),
-        AutoRoute(path: "schedule", page: ScheduleRoute.page),
-        AutoRoute(path: "settings", page: SettingRoute.page),
+        AutoRoute(
+          path: "schedule", 
+          page: ScheduleRoute.page,
+        ),
+        AutoRoute(
+          path: "settings", 
+          page: SettingRoute.page,
+        ),
       ],
     ),
-    AutoRoute(path: "/addschedule", page: AddScheduleRoute.page),
+    
+    // Add Schedule page 
+    AutoRoute(
+      path: "/addschedule", 
+      page: AddScheduleRoute.page,
+    ),
+    
+    // Edit Schedule page
+    AutoRoute(
+      page: EditScheduleRoute.page,
+      path: '/edit-schedule/:scheduleId',
+    ),
   ];
 }
