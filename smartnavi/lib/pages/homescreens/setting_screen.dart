@@ -376,13 +376,6 @@ class _SettingScreenState extends State<SettingScreen> {
                 ? null 
                 : _handleNotificationToggle,
           ),
-
-          // Browser settings instructions (shown when permission is denied)
-          if (_notificationPermission == 'denied')
-            ListTile(
-              leading: const Icon(Icons.help_outline, color: Colors.orange),
-              title: const Text('Enable Notifications in Browser'),
-            ),
         ],
       ),
     );
