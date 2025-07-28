@@ -18,7 +18,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   final FirestoreService _firestoreService = FirestoreService();
   late Stream<List<Schedule>> _schedulesStream;
   List<Schedule> _allSchedules = [];
-  
+
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
@@ -40,7 +40,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Delete Schedule'),
-          content: const Text('Are you sure you want to delete this schedule? This action cannot be undone.'),
+          content: const Text(
+            'Are you sure you want to delete this schedule? This action cannot be undone.',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -66,9 +68,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to delete: $e')));
         }
       }
     }
@@ -77,9 +79,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Schedule'),
-      ),
+      appBar: AppBar(title: const Text('My Schedule')),
       body: StreamBuilder<List<Schedule>>(
         stream: _schedulesStream,
         builder: (context, snapshot) {
@@ -88,11 +88,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             _allSchedules = [];
-             return _buildCalendarWithNoData();
+            return _buildCalendarWithNoData();
           }
-          
+
           _allSchedules = snapshot.data!;
-          final selectedDayEvents = _getEventsForDay(_selectedDay!, _allSchedules);
+          final selectedDayEvents = _getEventsForDay(
+            _selectedDay!,
+            _allSchedules,
+          );
 
           return Column(
             children: [
@@ -126,7 +129,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   itemBuilder: (context, index) {
                     final event = selectedDayEvents[index];
                     return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
                       child: ListTile(
                         title: Text(event.title),
                         subtitle: Text(event.locationName),
@@ -135,13 +141,17 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           children: [
                             Text(
                               DateFormat.jm().format(event.eventDate),
-                              style: const TextStyle(fontWeight: FontWeight.w500),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             PopupMenuButton<String>(
                               onSelected: (value) async {
                                 if (value == 'edit') {
                                   // Navigate to your existing EditScheduleScreen
-                                  context.router.push(EditScheduleRoute(scheduleId: event.id));
+                                  context.router.push(
+                                    EditScheduleRoute(scheduleId: event.id),
+                                  );
                                 } else if (value == 'delete') {
                                   await _deleteSchedule(event.id);
                                 }
@@ -161,9 +171,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                   value: 'delete',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.delete, size: 18, color: Colors.red),
+                                      Icon(
+                                        Icons.delete,
+                                        size: 18,
+                                        color: Colors.red,
+                                      ),
                                       SizedBox(width: 8),
-                                      Text('Delete', style: TextStyle(color: Colors.red)),
+                                      Text(
+                                        'Delete',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -180,7 +197,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           );
         },
       ),
-       floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.router.push(const AddScheduleRoute());
         },
@@ -188,7 +205,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       ),
     );
   }
-    
+
   // Helper widget for when there's no data, to still show the calendar
   Widget _buildCalendarWithNoData() {
     return Column(
@@ -205,9 +222,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           },
         ),
         const Expanded(
-          child: Center(
-            child: Text("No schedules yet. Tap '+' to add one!"),
-          ),
+          child: Center(child: Text("No schedules yet. Tap '+' to add one!")),
         ),
       ],
     );
