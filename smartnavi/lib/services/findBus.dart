@@ -11,7 +11,7 @@ class BusService {
     );
     if (_venueData != null) return;
     final String venueData = await rootBundle.loadString(
-      'smartnavi/assets/building.json', //也可以是其他名字，看你的
+      'smartnavi/assets/buildings.json', // 修正为 buildings.json
     );
     final Map<String, dynamic> jsonData = json.decode(data);
     final Map<String, dynamic> venueJsonData = json.decode(venueData);
@@ -19,37 +19,34 @@ class BusService {
     _venueData = venueJsonData['VenueResult'] as Map<String, List<String>>;
   }
 
-  Future<List<Map<String, int>>> findBusRoutes(
-    String startStop,
-    String endStop,
-  ) async {
-    await loadData();
-    List<Map<String, int>> result = [];
-    if (_routesData == null) return result;
-    for (var entry in _routesData!.entries) {
-      final routeId = entry.key;
-      final stops = entry.value;
-      if (stops is List) {
-        final startIdx = stops.indexWhere(
-          (stop) => stop['ShortName'] == startStop,
-        );
-        final endIdx = stops.indexWhere((stop) => stop['ShortName'] == endStop);
-        if (startIdx != -1 && endIdx != -1 && startIdx < endIdx) {
-          result.add({routeId: endIdx - startIdx});
-        }
-      }
-    }
-    return result;
-  }
+  
 
   Future<List<Map<String, int>>> findVenueRoutes(
     String startVenue,
     String endVenue,
   ) async {
     await loadData();
+    List<Map<String, int>> findBusRoutes(String startStop,String endStop){
+      List<Map<String, int>> result = [];
+      if (_routesData == null) return result;
+      for (var entry in _routesData!.entries) {
+        final routeId = entry.key;
+        final stops = entry.value;
+        if (stops is List) {
+          final startIdx = stops.indexWhere(
+            (stop) => stop['ShortName'] == startStop,
+          );
+          final endIdx = stops.indexWhere((stop) => stop['ShortName'] == endStop);
+          if (startIdx != -1 && endIdx != -1 && startIdx < endIdx) {
+            result.add({routeId: endIdx - startIdx});
+          }
+        }
+      }
+      return result;
+  }
     List<Map<String, int>> result = [];
     List<String> startBus = _venueData[startVenue];
-    List<String> endBus = _venueData[endVenue];
+    List<Map<String, int>> findBusRoutes(String startStop, String endStop) {
     for (String start in startBus) {
       for (String end in endBus) {
         final routes = await findBusRoutes(start, end);
@@ -68,8 +65,8 @@ class BusService {
     }
     // 转回 List<Map<String, int>>
     List<Map<String, int>> filteredResult = minMap.entries
-        .map((e) => {e.key: e.value})
-        .toList();
+    final startBus = _venueData?[startVenue] ?? [];
+    final endBus = _venueData?[endVenue] ?? [];
 
     return filteredResult;
   }
@@ -77,6 +74,7 @@ class BusService {
 
 void main() async {
   final busService = BusService();
-  final routes = await busService.findBusRoutes('PGP', 'LT27');
+  await busService.loadData();
+  final routes = busService.findBusRoutes('PGP', 'LT27');
   print('找到的路线: $routes');
 }
