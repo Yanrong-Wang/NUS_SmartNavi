@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
+import 'arrive_time.dart';
 
 // Define a route result with details about the bus route
 class RouteResult {
@@ -7,13 +8,32 @@ class RouteResult {
   final int stops;
   final String startStop;
   final String endStop;
+  final int? arrivalTime; // Added to store bus arrival time
 
   RouteResult({
     required this.routeId,
     required this.stops,
     required this.startStop,
     required this.endStop,
+    this.arrivalTime, // Optional arrival time
   });
+
+  // Helper method to create a copy with updated values
+  RouteResult copyWith({
+    String? routeId,
+    int? stops,
+    String? startStop,
+    String? endStop,
+    int? arrivalTime,
+  }) {
+    return RouteResult(
+      routeId: routeId ?? this.routeId,
+      stops: stops ?? this.stops,
+      startStop: startStop ?? this.startStop,
+      endStop: endStop ?? this.endStop,
+      arrivalTime: arrivalTime, // Allow setting it to null
+    );
+  }
 }
 
 class BusService {
@@ -132,23 +152,54 @@ class BusService {
           }
         }
         
-        // Turn the Map into a List and sort
-        List<RouteResult> result = routeResults.values.toList();
-        result.sort((a, b) => a.stops.compareTo(b.stops));
-        
+        // --- Fetch Arrival Times ---
+        List<Future<RouteResult>> arrivalTimeFutures = [];
+
+        for (var routeResult in routeResults.values) {
+            // Find the start stop name from _routesData
+            String? startStopName;
+            final routeStops = _routesData![routeResult.routeId];
+            if (routeStops is List) {
+                for (final stop in routeStops) {
+                    if (stop is Map && stop['busstopcode'] == routeResult.startStop) {
+                        startStopName = stop['busstopcode'];
+                        break;
+                    }
+                }
+            }
+
+            if (startStopName != null) {
+                print('Fetching arrival time for ${routeResult.routeId} at $startStopName');
+                final future = getNextBusArrival(startStopName, routeResult.routeId)
+                    .then((arrivalTime) {
+                      print('Arrival time result for ${routeResult.routeId}: $arrivalTime minutes');
+                      return routeResult.copyWith(arrivalTime: arrivalTime);
+                    });
+                arrivalTimeFutures.add(future);
+            } else {
+                print('No pickup name found for route ${routeResult.routeId} with start stop ${routeResult.startStop}');
+                // If name not found, add original result back
+                arrivalTimeFutures.add(Future.value(routeResult));
+            }
+        }
+
+        List<RouteResult> resultWithArrivals = await Future.wait(arrivalTimeFutures);
+        resultWithArrivals.sort((a, b) => a.stops.compareTo(b.stops));
+
         print('\n ROUTE SEARCH RESULTS');
-        if (result.isNotEmpty) {
-          print('Found ${result.length} available route(s):');
-          for (int i = 0; i < result.length; i++) {
-            final route = result[i];
-            print('${i + 1}. Route ${route.routeId}: ${route.startStop} -> ${route.endStop} (${route.stops} stops)');
+        if (resultWithArrivals.isNotEmpty) {
+          print('Found ${resultWithArrivals.length} available route(s):');
+          for (int i = 0; i < resultWithArrivals.length; i++) {
+            final route = resultWithArrivals[i];
+            final arrivalText = route.arrivalTime != null ? '${route.arrivalTime} min' : 'N/A';
+            print('${i + 1}. Route ${route.routeId}: ${route.startStop} -> ${route.endStop} (${route.stops} stops) - Arrival: $arrivalText');
           }
         } else {
           print('No direct bus routes found.');
         }
         print('================================');
         
-        return result;
+        return resultWithArrivals;
       }
     }
     

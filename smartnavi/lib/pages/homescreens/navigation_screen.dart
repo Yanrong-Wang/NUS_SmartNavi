@@ -95,6 +95,17 @@ class _NavigationScreenState extends State<NavigationScreen> {
         _routeResults = routes;
         _isLoading = false;
       });
+
+      // Show a success message that includes arrival times
+      if (routes.any((route) => route.arrivalTime != null)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Route search completed, arrival times fetched'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     } catch (e) {
       setState(() {
         _errorMessage = 'Search failed: $e';
@@ -213,68 +224,142 @@ class _NavigationScreenState extends State<NavigationScreen> {
               elevation: 2,
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(
+                child: Column(
                   children: [
-                    // Show route ID with a colored circle
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      child: Center(
-                        child: Text(
-                          result.routeId,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                    Row(
+                      children: [
+                        // Show route ID with a colored circle
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(25),
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-
-                    // Show route information
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Show start and end bus stops behind each route
-                          Text(
-                            'Bus Route ${result.routeId} (${result.startStop} → ${result.endStop})',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
+                          child: Center(
+                            child: Text(
+                              result.routeId,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 6),
-                          Row(
+                        ),
+                        const SizedBox(width: 16),
+
+                        // Show route information
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.location_on,
-                                size: 16,
-                                color: Colors.grey[600],
-                              ),
-                              const SizedBox(width: 4),
+                              // Show start and end bus stops behind each route
                               Text(
-                                '${result.stops} stops',
+                                'Bus Route ${result.routeId}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${result.startStop} → ${result.endStop}',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.grey[600],
+                                  color: Colors.grey[700],
                                 ),
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on,
+                                    size: 16,
+                                    color: Colors.grey[600],
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${result.stops} stops',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
 
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      color: Colors.grey[400],
-                      size: 16,
+                        // Arrival time display in a more prominent position
+                        if (result.arrivalTime != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12, 
+                              vertical: 8
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.green.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  size: 16,
+                                  color: Colors.green[700],
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${result.arrivalTime} min',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.green[700],
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12, 
+                              vertical: 8
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.grey.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.schedule,
+                                  size: 16,
+                                  color: Colors.grey[600],
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'N/A',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
                     ),
                   ],
                 ),
@@ -292,7 +377,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
     required String labelText,
     required String hintText,
   }) {
-    return Autocomplete<String>(
+    return RawAutocomplete<String>(
+      textEditingController: controller,
+      focusNode: FocusNode(),
       optionsBuilder: (TextEditingValue textEditingValue) {
         final query = textEditingValue.text.trim();
         print('Autocomplete query: "$query"');
@@ -303,54 +390,95 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
         final filteredOptions = _allStationNames.where((String option) {
           return option.toLowerCase().contains(query.toLowerCase());
-        }).toList();
+        }).take(20).toList(); 
 
         print('Found ${filteredOptions.length} options for "$query"');
         print('Options: ${filteredOptions.take(5).toList()}');
 
         return filteredOptions;
       },
-
-      optionsViewBuilder: (context, onSelected, options) {
+      displayStringForOption: (String option) => option,
+      fieldViewBuilder: (
+        BuildContext context,
+        TextEditingController fieldTextEditingController,
+        FocusNode fieldFocusNode,
+        VoidCallback onFieldSubmitted,
+      ) {
+        return TextField(
+          controller: fieldTextEditingController,
+          focusNode: fieldFocusNode,
+          onChanged: (value) {
+            print('TextField changed: "$value"');
+          },
+          decoration: InputDecoration(
+            labelText: labelText,
+            hintText: hintText,
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.search),
+          ),
+        );
+      },
+      optionsViewBuilder: (
+        BuildContext context,
+        AutocompleteOnSelected<String> onSelected,
+        Iterable<String> options,
+      ) {
         final optionsList = options.toList();
+        
+        print('Options view builder called with ${optionsList.length} options');
 
-        if (optionsList.isEmpty && controller.text.isNotEmpty) {
-          return Align(
-            alignment: Alignment.topLeft,
-            child: Material(
-              elevation: 4.0,
-              borderRadius: BorderRadius.circular(8),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 200),
-                child: const ListTile(
-                  title: Text('No station found.'),
-                  leading: Icon(Icons.search_off),
-                ),
-              ),
-            ),
-          );
+        if (optionsList.isEmpty) {
+          return const SizedBox.shrink();
         }
 
         return Align(
           alignment: Alignment.topLeft,
           child: Material(
-            elevation: 4.0,
+            color: Colors.white,
+            elevation: 8.0,
             borderRadius: BorderRadius.circular(8),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 200),
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
+            child: Container(
+              constraints: const BoxConstraints(
+                maxHeight: 300,
+                maxWidth: 400,
+              ),
+              child: ListView.separated(
+                padding: const EdgeInsets.all(8.0),
                 shrinkWrap: true,
                 itemCount: optionsList.length,
-                itemBuilder: (context, index) {
-                  final option = optionsList[index];
-                  return ListTile(
-                    dense: true,
-                    title: Text(option, style: const TextStyle(fontSize: 16)),
-                    leading: const Icon(Icons.location_on, size: 20),
+                separatorBuilder: (context, index) => const Divider(height: 1),
+                itemBuilder: (BuildContext context, int index) {
+                  final String option = optionsList[index];
+                  return InkWell(
                     onTap: () {
+                      print('Option selected: $option');
                       onSelected(option);
                     },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12.0,
+                        horizontal: 16.0,
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on,
+                            size: 20,
+                            color: Colors.blue,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              option,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 },
               ),
@@ -358,33 +486,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
           ),
         );
       },
-
-      onSelected: (String selection) {
-        controller.text = selection;
-        print('Selected: $selection');
-      },
-
-      fieldViewBuilder:
-          (
-            BuildContext context,
-            TextEditingController fieldController,
-            FocusNode fieldFocusNode,
-            VoidCallback onFieldSubmitted,
-          ) {
-            return TextField(
-              controller: controller,
-              focusNode: fieldFocusNode,
-              onChanged: (value) {
-                print('TextField changed: "$value"');
-              },
-              decoration: InputDecoration(
-                labelText: labelText,
-                hintText: hintText,
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.search),
-              ),
-            );
-          },
     );
   }
 }
