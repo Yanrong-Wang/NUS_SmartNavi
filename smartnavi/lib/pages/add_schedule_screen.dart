@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:search_page/search_page.dart';
 import 'package:intl/intl.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/buildings.dart';
 import '../models/schedule_model.dart';
 import '../services/firestore_service.dart';
@@ -108,11 +109,20 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
         _selectedTime!.minute,
       );
 
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please login to create schedule')),
+        );
+        return;
+      }
+
       final newSchedule = Schedule(
         id: '', // Firestore will generate ID
         title: _titleInput.text,
         eventDate: eventDateTime,
         locationName: _selectedBuilding?.roomName ?? '', // Ensure locationName is not null
+        userId: currentUser.uid, // 添加当前用户ID
       );
       try{
         await _firestoreService.addSchedule(newSchedule);

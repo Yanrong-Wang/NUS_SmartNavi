@@ -29,6 +29,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
   Building? _selectedBuilding;
   List<Building> _buildings = [];
   bool _isLoading = true;
+  Schedule? _currentSchedule; // 存储当前加载的schedule
 
   final FirestoreService _firestoreService = FirestoreService();
 
@@ -58,6 +59,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
     try {
       final schedule = await _firestoreService.getScheduleById(widget.scheduleId);
       if (schedule != null) {
+        _currentSchedule = schedule; // 存储当前schedule
         _titleInput.text = schedule.title;
         _locationInput.text = schedule.locationName;
         _selectedDate = schedule.eventDate;
@@ -146,11 +148,19 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
         _selectedTime!.minute,
       );
 
+      if (_currentSchedule == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error: Schedule data not loaded')),
+        );
+        return;
+      }
+
       final updatedSchedule = Schedule(
         id: widget.scheduleId,
         title: _titleInput.text,
         eventDate: eventDateTime,
         locationName: _selectedBuilding!.roomName,
+        userId: _currentSchedule!.userId, // 保持原有的userId
       );
 
       try {

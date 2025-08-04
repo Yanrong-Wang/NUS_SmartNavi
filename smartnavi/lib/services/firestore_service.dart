@@ -5,12 +5,16 @@ import 'dart:async';
 import 'package:web/web.dart' as web;
 import 'dart:js_interop';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // 添加Firebase Auth
 
 class FirestoreService {
   
   // Schedule related collections
   final CollectionReference _schedulesCollection = 
       FirebaseFirestore.instance.collection('schedules');
+
+  // 获取当前用户ID的辅助方法
+  String? get _currentUserId => FirebaseAuth.instance.currentUser?.uid;
 
   // navigation related collections
   final CollectionReference _venuesCollection = 
@@ -21,9 +25,16 @@ class FirestoreService {
   
   // EXISTING SCHEDULE METHODS (unchanged)
   
-  // Get a stream of all schedules
+  // Get a stream of current user's schedules
   Stream<List<Schedule>> getSchedules() {
+    final userId = _currentUserId;
+    if (userId == null) {
+      // 如果用户未登录，返回空列表
+      return Stream.value([]);
+    }
+    
     return _schedulesCollection
+        .where('userId', isEqualTo: userId) // 只获取当前用户的schedules
         .orderBy('eventDate', descending: false)
         .snapshots()
         .map((snapshot) => snapshot.docs
@@ -33,8 +44,21 @@ class FirestoreService {
 
   // Add a new schedule
   Future<void> addSchedule(Schedule schedule) async {
+    final userId = _currentUserId;
+    if (userId == null) {
+      throw Exception('User not authenticated');
+    }
+    
     try {
-      await _schedulesCollection.add(schedule.toFirestore());
+      // 确保schedule包含当前用户ID
+      final scheduleWithUserId = Schedule(
+        id: schedule.id,
+        title: schedule.title,
+        eventDate: schedule.eventDate,
+        locationName: schedule.locationName,
+        userId: userId, // 强制使用当前用户ID
+      );
+      await _schedulesCollection.add(scheduleWithUserId.toFirestore());
     } catch (e) {
       throw Exception('Failed to add schedule: $e');
     }
@@ -42,8 +66,33 @@ class FirestoreService {
 
   // Update a schedule 
   Future<void> updateSchedule(Schedule schedule) async {
+    final userId = _currentUserId;
+    if (userId == null) {
+      throw Exception('User not authenticated');
+    }
+    
     try {
-      await _schedulesCollection.doc(schedule.id).update(schedule.toFirestore());
+      // 首先验证schedule属于当前用户
+      final doc = await _schedulesCollection.doc(schedule.id).get();
+      if (!doc.exists) {
+        throw Exception('Schedule not found');
+      }
+      
+      final data = doc.data() as Map<String, dynamic>;
+      if (data['userId'] != userId) {
+        throw Exception('Unauthorized: Cannot update another user\'s schedule');
+      }
+      
+      // 确保更新时保持正确的用户ID
+      final scheduleWithUserId = Schedule(
+        id: schedule.id,
+        title: schedule.title,
+        eventDate: schedule.eventDate,
+        locationName: schedule.locationName,
+        userId: userId, // 保持当前用户ID
+      );
+      
+      await _schedulesCollection.doc(schedule.id).update(scheduleWithUserId.toFirestore());
     } catch (e) {
       throw Exception('Failed to update schedule: $e');
     }
@@ -51,7 +100,23 @@ class FirestoreService {
 
   // Delete a schedule
   Future<void> deleteSchedule(String id) async {
+    final userId = _currentUserId;
+    if (userId == null) {
+      throw Exception('User not authenticated');
+    }
+    
     try {
+      // 首先验证schedule属于当前用户
+      final doc = await _schedulesCollection.doc(id).get();
+      if (!doc.exists) {
+        throw Exception('Schedule not found');
+      }
+      
+      final data = doc.data() as Map<String, dynamic>;
+      if (data['userId'] != userId) {
+        throw Exception('Unauthorized: Cannot delete another user\'s schedule');
+      }
+      
       await _schedulesCollection.doc(id).delete();
     } catch (e) {
       throw Exception('Failed to delete schedule: $e');
@@ -59,9 +124,19 @@ class FirestoreService {
   }
 
   Future<Schedule?> getScheduleById(String scheduleId) async {
+    final userId = _currentUserId;
+    if (userId == null) {
+      throw Exception('User not authenticated');
+    }
+    
     try {
       DocumentSnapshot doc = await _schedulesCollection.doc(scheduleId).get();
       if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        // 验证schedule属于当前用户
+        if (data['userId'] != userId) {
+          return null; // 不返回其他用户的schedule
+        }
         return Schedule.fromFirestore(doc);
       }
       return null;
@@ -70,9 +145,15 @@ class FirestoreService {
     }
   }
 
-  // Get upcoming schedules
+  // Get upcoming schedules for current user
   Stream<List<Schedule>> getUpcomingSchedules() {
+    final userId = _currentUserId;
+    if (userId == null) {
+      return Stream.value([]);
+    }
+    
     return _schedulesCollection
+        .where('userId', isEqualTo: userId) // 只获取当前用户的schedules
         .where('eventDate', isGreaterThan: Timestamp.now())
         .orderBy('eventDate', descending: false)
         .snapshots()
@@ -81,13 +162,19 @@ class FirestoreService {
             .toList());
   }
 
-  // Get today's schedules
+  // Get today's schedules for current user
   Stream<List<Schedule>> getTodaySchedules() {
+    final userId = _currentUserId;
+    if (userId == null) {
+      return Stream.value([]);
+    }
+    
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day);
     final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
     
     return _schedulesCollection
+        .where('userId', isEqualTo: userId) // 只获取当前用户的schedules
         .where('eventDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
         .where('eventDate', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
         .orderBy('eventDate', descending: false)
@@ -265,11 +352,15 @@ class FirestoreService {
     // Only send notifications if both permission and app setting allow
     if (!_notificationPermissionGranted || !_notificationEnabled || !kIsWeb) return;
 
+    final userId = _currentUserId;
+    if (userId == null) return; // 用户未登录时不发送通知
+
     try {
       final now = DateTime.now();
       final in20Minutes = now.add(Duration(minutes: 20));
       
       final snapshot = await _schedulesCollection
+          .where('userId', isEqualTo: userId) // 只通知当前用户的schedules
           .where('eventDate', isGreaterThan: Timestamp.fromDate(now))
           .where('eventDate', isLessThan: Timestamp.fromDate(in20Minutes))
           .get();

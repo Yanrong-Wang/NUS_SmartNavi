@@ -5,12 +5,14 @@ class Schedule {
   final String title;
   final DateTime eventDate;
   final String locationName;
+  final String userId; // 添加用户ID字段
 
   Schedule({
     required this.id,
     required this.title,
     required this.eventDate,
     required this.locationName,
+    required this.userId, // 必需的用户ID
   });
 
   // From Firestore document to Schedule object
@@ -21,6 +23,7 @@ class Schedule {
       title: data['title'] ?? '',
       eventDate: (data['eventDate'] as Timestamp).toDate(),
       locationName: data['locationName'] ?? '',
+      userId: data['userId'] ?? '', // 从Firestore读取userId
     );
   }
 
@@ -30,6 +33,7 @@ class Schedule {
       'title': title,
       'eventDate': Timestamp.fromDate(eventDate),
       'locationName': locationName,
+      'userId': userId, // 保存userId到Firestore
     };
   }
 }
