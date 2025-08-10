@@ -91,8 +91,26 @@ Future<void> addSchedule(Schedule schedule) async {
     );
 
     // 5. Call the check with the complete, correct schedule object
+    // Force check immediate notification regardless of cached permission state
+    print('=== FORCE CHECKING IMMEDIATE NOTIFICATION ===');
+    print('Permission granted (cached): $_notificationPermissionGranted');
+    print('Notifications enabled (cached): $_notificationEnabled');
+    
+    // Check current real-time permission status
+    final currentPermission = await _getCurrentPermission();
+    final currentEnabled = await getNotificationEnabled();
+    
+    print('Permission granted (real-time): ${currentPermission == 'granted'}');
+    print('Notifications enabled (real-time): $currentEnabled');
+    
+    // Update cached values with real-time check
+    _notificationPermissionGranted = (currentPermission == 'granted');
+    _notificationEnabled = currentEnabled;
+    
     if (_notificationPermissionGranted && _notificationEnabled) {
       await _checkSingleScheduleForImmediateNotification(finalSchedule);
+    } else {
+      print('Skipping immediate notification: permission=$_notificationPermissionGranted, enabled=$_notificationEnabled');
     }
   } catch (e) {
     throw Exception('Failed to add schedule: $e');
@@ -127,6 +145,12 @@ Future<void> addSchedule(Schedule schedule) async {
     await _schedulesCollection.doc(schedule.id).update(scheduleWithUserId.toFirestore());
 
     // Check for notifications using the same guaranteed-correct object
+    // Force real-time permission check for update notification too
+    final currentPermission = await _getCurrentPermission();
+    final currentEnabled = await getNotificationEnabled();
+    _notificationPermissionGranted = (currentPermission == 'granted');
+    _notificationEnabled = currentEnabled;
+    
     if (_notificationPermissionGranted && _notificationEnabled) {
       await _checkSingleScheduleForImmediateNotification(scheduleWithUserId);
     }
@@ -397,11 +421,21 @@ Future<void> addSchedule(Schedule schedule) async {
       final timeDifferenceInSeconds = schedule.eventDate.difference(now).inSeconds;
       final minutes = (timeDifferenceInSeconds / 60).ceil();
       
-      print('Checking immediate notification for: ${schedule.title}, time diff: ${timeDifferenceInSeconds}s');
+      print('=== IMMEDIATE NOTIFICATION CHECK ===');
+      print('Event: ${schedule.title}');
+      print('Event time: ${schedule.eventDate.toString().substring(11, 19)}');
+      print('Current time: ${now.toString().substring(11, 19)}');
+      print('Time diff: ${timeDifferenceInSeconds}s (${minutes} minutes)');
+      print('Notification permission: $_notificationPermissionGranted');
+      print('Notification enabled: $_notificationEnabled');
       
       // Only notify for future events within 20 minutes
       if (timeDifferenceInSeconds > 0 && timeDifferenceInSeconds <= 1200) {
         final notificationId = 'creation_${schedule.id}';
+        
+        print('Event is within 20 minutes, checking if notification already sent...');
+        print('Notification ID: $notificationId');
+        print('Already sent: ${_scheduledNotificationIds.contains(notificationId)}');
         
         if (!_scheduledNotificationIds.contains(notificationId)) {
           String title;
@@ -415,6 +449,8 @@ Future<void> addSchedule(Schedule schedule) async {
             requireInteraction = false;
           }
           
+          print('Sending immediate notification: $title');
+          
           sendImmediateNotification(
             title: title,
             body: '${schedule.title} starts in $minutes minute${minutes == 1 ? '' : 's'} at ${schedule.locationName}',
@@ -423,9 +459,18 @@ Future<void> addSchedule(Schedule schedule) async {
           );
           _scheduledNotificationIds.add(notificationId);
           
-          print('Sent creation notification for event in $minutes minutes');
+          print('✓ Sent creation notification for event in $minutes minutes');
+        } else {
+          print('× Notification already sent for this event');
+        }
+      } else {
+        if (timeDifferenceInSeconds <= 0) {
+          print('× Event is in the past, skipping notification');
+        } else {
+          print('× Event is more than 20 minutes away (${(timeDifferenceInSeconds/60).ceil()} minutes), skipping notification');
         }
       }
+      print('=== END IMMEDIATE NOTIFICATION CHECK ===');
     } catch (e) {
       print('Error in immediate notification check: $e');
     }
@@ -437,13 +482,17 @@ Future<void> addSchedule(Schedule schedule) async {
     // Only process future events
     if (timeDifferenceInSeconds <= 0) return;
     
+    print('Processing schedule for notification: ${schedule.title}, time diff: ${timeDifferenceInSeconds}s');
+    
     // Check each critical time point
     for (int thresholdSeconds in _reminderThresholds) {
-      // Calculate difference from threshold (allow 15-second tolerance)
+      // Calculate difference from threshold (increased tolerance to 30 seconds)
       final diffFromThreshold = (timeDifferenceInSeconds - thresholdSeconds).abs();
       
-      // If current time difference is close to a threshold (within 15-second tolerance)
-      if (diffFromThreshold <= 15) {
+      print('Checking threshold ${thresholdSeconds}s: diff=${diffFromThreshold}s');
+      
+      // If current time difference is close to a threshold (within 30-second tolerance)
+      if (diffFromThreshold <= 30) {
         final notificationId = '${schedule.id}_${thresholdSeconds}s';
         
         // Check if notification already sent for this threshold
@@ -453,6 +502,8 @@ Future<void> addSchedule(Schedule schedule) async {
           
           print('Sent scheduled notification for ${thresholdSeconds}s threshold');
           break; // Send only one notification at a time to avoid spam
+        } else {
+          print('Notification already sent for threshold ${thresholdSeconds}s');
         }
       }
     }
@@ -498,13 +549,17 @@ Future<void> addSchedule(Schedule schedule) async {
 
   try {
     final now = DateTime.now();
-    final in21Minutes = now.add(Duration(seconds: 1260)); // 21 minutes with buffer
+    final in25Minutes = now.add(Duration(seconds: 1500)); // 25 minutes with buffer
+    
+    print('Checking notifications: current time=${now.toString().substring(11, 19)}');
     
     final snapshot = await _schedulesCollection
         .where('userId', isEqualTo: userId)
         .where('eventDate', isGreaterThan: Timestamp.fromDate(now))
-        .where('eventDate', isLessThan: Timestamp.fromDate(in21Minutes))
+        .where('eventDate', isLessThan: Timestamp.fromDate(in25Minutes))
         .get();
+
+    print('Found ${snapshot.docs.length} upcoming events within 25 minutes');
 
     for (var doc in snapshot.docs) {
       final schedule = Schedule.fromFirestore(doc);
@@ -616,10 +671,10 @@ Future<void> addSchedule(Schedule schedule) async {
 
   void _startNotificationScheduler() {
     _notificationTimer?.cancel();
-    _notificationTimer = Timer.periodic(Duration(seconds:15), (timer) {
+    _notificationTimer = Timer.periodic(Duration(seconds: 10), (timer) {
       _checkAndSendUpcomingNotifications();
     });
-    print('Notifications: Scheduler started');
+    print('Notifications: Scheduler started (checking every 10 seconds)');
   }
 
   void _sendUrgentNotification(Schedule schedule, int minutes) {
@@ -649,11 +704,55 @@ Future<void> addSchedule(Schedule schedule) async {
   }
 
   void sendTestNotification() {
+    print('=== SENDING TEST NOTIFICATION ===');
+    print('Permission granted: $_notificationPermissionGranted');
+    print('Notification enabled: $_notificationEnabled');
+    print('Platform: ${kIsWeb ? 'web' : 'mobile'}');
+    
     sendImmediateNotification(
       title: 'Test Notification',
       body: 'SmartNavi notification system is working! Time: ${DateTime.now().toString().substring(11, 16)}',
       tag: 'test_notification',
+      requireInteraction: false,
     );
+    print('=== TEST NOTIFICATION SENT ===');
+  }
+
+  // New method to test 20-minute notification specifically
+  void testTwentyMinuteNotification() {
+    print('=== TESTING 20-MINUTE NOTIFICATION ===');
+    
+    // Create a test schedule 15 minutes in the future
+    final testTime = DateTime.now().add(Duration(minutes: 15));
+    final testSchedule = Schedule(
+      id: 'test_${DateTime.now().millisecondsSinceEpoch}',
+      title: 'Test Event (15 min)',
+      eventDate: testTime,
+      endDate: testTime.add(Duration(hours: 1)),
+      locationName: 'Test Location',
+      userId: _currentUserId ?? 'test_user',
+    );
+    
+    _checkSingleScheduleForImmediateNotification(testSchedule);
+    print('=== 20-MINUTE TEST COMPLETED ===');
+  }
+
+  // Debug method to check current permission state
+  void debugNotificationState() {
+    print('=== NOTIFICATION DEBUG STATE ===');
+    print('kIsWeb: $kIsWeb');
+    print('_notificationPermissionGranted: $_notificationPermissionGranted');
+    print('_notificationEnabled: $_notificationEnabled');
+    print('_currentUserId: $_currentUserId');
+    print('isNotificationFullyEnabled(): ${isNotificationFullyEnabled()}');
+    print('_scheduledNotificationIds.length: ${_scheduledNotificationIds.length}');
+    
+    // Check current browser permission
+    _getCurrentPermission().then((permission) {
+      print('Current browser permission: $permission');
+    });
+    
+    print('=== END DEBUG STATE ===');
   }
 
   void stopNotificationScheduler() {

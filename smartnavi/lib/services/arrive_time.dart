@@ -20,7 +20,7 @@ Future<void> testBasicConnection() async {
   }
 }
 
-Future<int?> getNextBusArrival(String busStopName, String busName) async {
+Future<String?> getNextBusArrival(String busStopName, String busName) async {
   try {
     final url = Uri.parse('https://nnextbus.nus.edu.sg/ShuttleService?busstopname=$busStopName');
     
@@ -56,51 +56,13 @@ Future<int?> getNextBusArrival(String busStopName, String busName) async {
         );
         
         if (bus != null) {
-          print('Found bus $busName: ${bus.toString()}');
-          
-          // get all arrival times
-          final etas = bus['_etas'] as List?;
-          if (etas != null && etas.isNotEmpty) {
-            final now = DateTime.now().toUtc();
-            DateTime? closestFutureTime;
-            int? closestMinutes;
-            
-            print('Processing ${etas.length} arrival times:');
-            
-            // iterate through all arrival times, find the closest future time
-            for (int i = 0; i < etas.length; i++) {
-              final etaData = etas[i];
-              final arrivalStr = etaData['ts'] as String?;
-              
-              if (arrivalStr != null && arrivalStr.isNotEmpty) {
-                final eta = DateTime.tryParse(arrivalStr);
-                if (eta != null) {
-                  final diff = eta.difference(now).inMinutes;
-                  print('ETA ${i + 1}: $arrivalStr -> $diff minutes from now');
-                  
-                  // only consider future times (diff >= 0)
-                  if (diff >= 0) {
-                    if (closestFutureTime == null || eta.isBefore(closestFutureTime)) {
-                      closestFutureTime = eta;
-                      closestMinutes = diff;
-                      print('Updated closest future time: $diff minutes');
-                    }
-                  } else {
-                    print('Skipping past time: $diff minutes ago');
-                  }
-                }
-              }
-            }
-            
-            if (closestMinutes != null) {
-              print('Final closest arrival time: $closestMinutes minutes');
-              return closestMinutes;
-            } else {
-              print('No future arrival times found for bus $busName');
-            }
-          } else {
-            print('No arrival time data found for bus $busName');
+          // API返回的arrivalTime是String格式
+          final arrivalTime = bus["arrivalTime"];
+          if (arrivalTime != null) {
+            return arrivalTime.toString();
           }
+          print('arrivalTime is null');
+          return null;
         } else {
           print('Bus $busName not found in shuttles list');
           print('Available buses: ${shuttles.map((s) => s['name']).toList()}');

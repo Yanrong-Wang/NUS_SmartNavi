@@ -8,7 +8,7 @@ class RouteResult {
   final int stops;
   final String startStop;
   final String endStop;
-  final int? arrivalTime; // Added to store bus arrival time
+  final String? arrivalTime; // Added to store bus arrival time
 
   RouteResult({
     required this.routeId,
@@ -24,7 +24,7 @@ class RouteResult {
     int? stops,
     String? startStop,
     String? endStop,
-    int? arrivalTime,
+    String? arrivalTime,
   }) {
     return RouteResult(
       routeId: routeId ?? this.routeId,
