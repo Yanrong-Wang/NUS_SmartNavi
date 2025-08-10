@@ -124,18 +124,30 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
         locationName: _selectedBuilding?.roomName ?? '', // Ensure locationName is not null
         userId: currentUser.uid, // 添加当前用户ID
       );
-      try{
-        await _firestoreService.addSchedule(newSchedule);
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error adding schedule: $e')),
-        );
-        return;
-      }
-
       
-      if (mounted) {
-        context.router.pop();
+      try {
+        await _firestoreService.addSchedule(newSchedule);
+        
+        // 成功保存后显示成功消息
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Schedule created successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          context.router.pop(); // 成功后关闭页面
+        }
+      } catch (e) {
+        // 保存失败时显示错误消息
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error adding schedule: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   }
