@@ -76,6 +76,20 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
+  String _formatScheduleTime(Schedule schedule) {
+    // format start time
+    final startTime = DateFormat.jm().format(schedule.eventDate);
+
+    // only display start time if no end date
+    if (schedule.endDate == null) {
+      return startTime;
+    }
+
+    // format end time
+    final endTime = DateFormat.jm().format(schedule.endDate!);
+    return '$startTime - $endTime';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -140,7 +154,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              DateFormat.jm().format(event.eventDate),
+                              _formatScheduleTime(event),
                               style: const TextStyle(
                                 fontWeight: FontWeight.w500,
                               ),
@@ -220,6 +234,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               _focusedDay = focusedDay;
             });
           },
+          eventLoader: (day) => [],
         ),
         const Expanded(
           child: Center(child: Text("No schedules yet. Tap '+' to add one!")),

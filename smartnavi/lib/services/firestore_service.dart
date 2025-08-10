@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:web/web.dart' as web;
 import 'dart:js_interop';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // 添加Firebase Auth
+import 'package:firebase_auth/firebase_auth.dart'; 
 
 class FirestoreService {
   
@@ -13,7 +13,7 @@ class FirestoreService {
   final CollectionReference _schedulesCollection = 
       FirebaseFirestore.instance.collection('schedules');
 
-  // 获取当前用户ID的辅助方法
+  // Get current user ID
   String? get _currentUserId => FirebaseAuth.instance.currentUser?.uid;
 
   // navigation related collections
@@ -23,80 +23,118 @@ class FirestoreService {
   final CollectionReference _routesCollection = 
       FirebaseFirestore.instance.collection('Routes');
   
-  // EXISTING SCHEDULE METHODS (unchanged)
+  // Schedule methods
   
   // Get a stream of current user's schedules
-  Stream<List<Schedule>> getSchedules() {
-    final userId = _currentUserId;
-    if (userId == null) {
-      // 如果用户未登录，返回空列表
-      return Stream.value([]);
-    }
-    
-    return _schedulesCollection
-        .where('userId', isEqualTo: userId) // 只获取当前用户的schedules
-        .orderBy('eventDate', descending: false)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Schedule.fromFirestore(doc))
-            .toList());
+Stream<List<Schedule>> getSchedules() {
+  final userId = _currentUserId;
+  
+  if (userId == null) {
+    print('No current user - returning empty stream');
+    return Stream.value([]);
   }
+  
+  return _schedulesCollection
+      .where('userId', isEqualTo: userId)
+      .snapshots()
+      .map((snapshot) {
+        
+        if (snapshot.docs.isEmpty) {
+          print('No documents found for user: $userId');
+          return <Schedule>[];
+        }
+        
+        final schedules = <Schedule>[];
+        for (int i = 0; i < snapshot.docs.length; i++) {
+          final doc = snapshot.docs[i];
+          try {
+            final schedule = Schedule.fromFirestore(doc);
+            schedules.add(schedule);
+            
+          } catch (e, stackTrace) {
+            print('Error parsing document ${doc.id}: $e');
+            print('Stack trace: $stackTrace');
+          }
+        }
+
+        schedules.sort((a, b) => a.eventDate.compareTo(b.eventDate)); // Don't use orderby(), use Dart's sort
+
+        return schedules;
+      });
+}
 
   // Add a new schedule
-  Future<void> addSchedule(Schedule schedule) async {
-    final userId = _currentUserId;
-    if (userId == null) {
-      throw Exception('User not authenticated');
+  // In lib/services/firestore_service.dart
+
+// CHANGE THIS METHOD
+Future<void> addSchedule(Schedule schedule) async {
+  final userId = _currentUserId;
+  if (userId == null) throw Exception('User not authenticated');
+
+  try {
+    // 1. Create the data map from the incoming schedule
+    final scheduleData = schedule.toFirestore();
+    // 2. Ensure the correct userId is set
+    scheduleData['userId'] = userId; 
+
+    // 3. Add to Firestore and GET THE REFERENCE BACK
+    final DocumentReference docRef = await _schedulesCollection.add(scheduleData);
+
+    // 4. Create a FINAL schedule object that includes the REAL ID
+    final finalSchedule = Schedule(
+      id: docRef.id, // <-- Use the NEWLY generated ID
+      title: schedule.title,
+      eventDate: schedule.eventDate,
+      endDate: schedule.endDate,
+      locationName: schedule.locationName,
+      userId: userId,
+    );
+
+    // 5. Call the check with the complete, correct schedule object
+    if (_notificationPermissionGranted && _notificationEnabled) {
+      await _checkSingleScheduleForImmediateNotification(finalSchedule);
     }
-    
-    try {
-      // 确保schedule包含当前用户ID
-      final scheduleWithUserId = Schedule(
-        id: schedule.id,
-        title: schedule.title,
-        eventDate: schedule.eventDate,
-        locationName: schedule.locationName,
-        userId: userId, // 强制使用当前用户ID
-      );
-      await _schedulesCollection.add(scheduleWithUserId.toFirestore());
-    } catch (e) {
-      throw Exception('Failed to add schedule: $e');
-    }
+  } catch (e) {
+    throw Exception('Failed to add schedule: $e');
   }
+}
 
   // Update a schedule 
   Future<void> updateSchedule(Schedule schedule) async {
-    final userId = _currentUserId;
-    if (userId == null) {
-      throw Exception('User not authenticated');
+  final userId = _currentUserId;
+  if (userId == null) throw Exception('User not authenticated');
+
+  try {
+    // ... (keep all your user and document validation checks)
+    final doc = await _schedulesCollection.doc(schedule.id).get();
+    if (!doc.exists) throw Exception('Schedule not found');
+    final data = doc.data() as Map<String, dynamic>;
+    if (data['userId'] != userId) {
+      throw Exception('Unauthorized: Cannot update another user\'s schedule');
     }
+
+    // Rebuild the schedule object to ensure it has the correct data
+    final scheduleWithUserId = Schedule(
+      id: schedule.id,
+      title: schedule.title,
+      eventDate: schedule.eventDate,
+      endDate: schedule.endDate,
+      locationName: schedule.locationName,
+      userId: userId,
+    );
     
-    try {
-      // 首先验证schedule属于当前用户
-      final doc = await _schedulesCollection.doc(schedule.id).get();
-      if (!doc.exists) {
-        throw Exception('Schedule not found');
-      }
-      
-      final data = doc.data() as Map<String, dynamic>;
-      if (data['userId'] != userId) {
-        throw Exception('Unauthorized: Cannot update another user\'s schedule');
-      }
-      
-      // 确保更新时保持正确的用户ID
-      final scheduleWithUserId = Schedule(
-        id: schedule.id,
-        title: schedule.title,
-        eventDate: schedule.eventDate,
-        locationName: schedule.locationName,
-        userId: userId, // 保持当前用户ID
-      );
-      
-      await _schedulesCollection.doc(schedule.id).update(scheduleWithUserId.toFirestore());
-    } catch (e) {
-      throw Exception('Failed to update schedule: $e');
+    // Update using the guaranteed-correct object
+    await _schedulesCollection.doc(schedule.id).update(scheduleWithUserId.toFirestore());
+
+    // Check for notifications using the same guaranteed-correct object
+    if (_notificationPermissionGranted && _notificationEnabled) {
+      await _checkSingleScheduleForImmediateNotification(scheduleWithUserId);
     }
+
+  } catch (e) {
+    throw Exception('Failed to update schedule: $e');
   }
+}
 
   // Delete a schedule
   Future<void> deleteSchedule(String id) async {
@@ -106,7 +144,7 @@ class FirestoreService {
     }
     
     try {
-      // 首先验证schedule属于当前用户
+      // check if the schedule belongs to the current user
       final doc = await _schedulesCollection.doc(id).get();
       if (!doc.exists) {
         throw Exception('Schedule not found');
@@ -133,9 +171,9 @@ class FirestoreService {
       DocumentSnapshot doc = await _schedulesCollection.doc(scheduleId).get();
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
-        // 验证schedule属于当前用户
+        // check if the schedule belongs to the current user
         if (data['userId'] != userId) {
-          return null; // 不返回其他用户的schedule
+          return null; // dont return schedules that don't belong to the current user
         }
         return Schedule.fromFirestore(doc);
       }
@@ -153,7 +191,7 @@ class FirestoreService {
     }
     
     return _schedulesCollection
-        .where('userId', isEqualTo: userId) // 只获取当前用户的schedules
+        .where('userId', isEqualTo: userId) // only get current user's schedules
         .where('eventDate', isGreaterThan: Timestamp.now())
         .orderBy('eventDate', descending: false)
         .snapshots()
@@ -174,7 +212,7 @@ class FirestoreService {
     final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
     
     return _schedulesCollection
-        .where('userId', isEqualTo: userId) // 只获取当前用户的schedules
+        .where('userId', isEqualTo: userId) 
         .where('eventDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
         .where('eventDate', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
         .orderBy('eventDate', descending: false)
@@ -184,7 +222,7 @@ class FirestoreService {
             .toList());
   }
 
-  // EXISTING NAVIGATION METHODS (unchanged)
+  // Navigation Methods
   
   Future<List<String>> getStationNames() async {
     try {
@@ -222,16 +260,21 @@ class FirestoreService {
     }
   }
 
-  // ENHANCED NOTIFICATION PROPERTIES
+  // Notification properties
   Timer? _notificationTimer;
   bool _notificationPermissionGranted = false;
-  bool _notificationEnabled = true;  // New: App-level notification toggle
+  bool _notificationEnabled = true;
   final Set<String> _scheduledNotificationIds = <String>{};
+
+  static const List<int> _reminderThresholds = [
+    1200, // 20 minutes
+    600,  // 10 minutes
+    60,   // 1 minute
+  ];
   
   // SharedPreferences key for notification settings
   static const String _notificationEnabledKey = 'notification_enabled';
 
-  // NEW: Notification control methods
   
   /// Get notification enabled status from local storage
   Future<bool> getNotificationEnabled() async {
@@ -297,7 +340,7 @@ class FirestoreService {
     return _notificationPermissionGranted && _notificationEnabled;
   }
 
-  // MODIFIED NOTIFICATION METHODS
+  // Notification methods
 
   /// Initialize notifications using modern Web API
   Future<bool> initializeNotifications() async {
@@ -347,48 +390,133 @@ class FirestoreService {
     }
   }
 
-  /// Modified: Check notifications with app-level setting
-  void _checkAndSendUpcomingNotifications() async {
-    // Only send notifications if both permission and app setting allow
-    if (!_notificationPermissionGranted || !_notificationEnabled || !kIsWeb) return;
-
-    final userId = _currentUserId;
-    if (userId == null) return; // 用户未登录时不发送通知
-
+  // Check if a schedule is within 20 minutes and send immediate notification
+  Future<void> _checkSingleScheduleForImmediateNotification(Schedule schedule) async {
     try {
       final now = DateTime.now();
-      final in20Minutes = now.add(Duration(minutes: 20));
+      final timeDifferenceInSeconds = schedule.eventDate.difference(now).inSeconds;
+      final minutes = (timeDifferenceInSeconds / 60).ceil();
       
-      final snapshot = await _schedulesCollection
-          .where('userId', isEqualTo: userId) // 只通知当前用户的schedules
-          .where('eventDate', isGreaterThan: Timestamp.fromDate(now))
-          .where('eventDate', isLessThan: Timestamp.fromDate(in20Minutes))
-          .get();
-
-      for (var doc in snapshot.docs) {
-        final schedule = Schedule.fromFirestore(doc);
-        final eventTime = schedule.eventDate;
-        final timeDifference = eventTime.difference(now).inMinutes;
+      print('Checking immediate notification for: ${schedule.title}, time diff: ${timeDifferenceInSeconds}s');
+      
+      // Only notify for future events within 20 minutes
+      if (timeDifferenceInSeconds > 0 && timeDifferenceInSeconds <= 1200) {
+        final notificationId = 'creation_${schedule.id}';
         
-        final notificationId = '${schedule.id}_${timeDifference}min';
-        
-        if (_scheduledNotificationIds.contains(notificationId)) continue;
-        
-        if (timeDifference <= 5 && timeDifference > 0) {
-          _sendUrgentNotification(schedule, timeDifference);
+        if (!_scheduledNotificationIds.contains(notificationId)) {
+          String title;
+          bool requireInteraction;
+          
+          if (minutes <= 5) {
+            title = 'New Event Starting Soon!';
+            requireInteraction = true;
+          } else {
+            title = 'New Event Created';
+            requireInteraction = false;
+          }
+          
+          sendImmediateNotification(
+            title: title,
+            body: '${schedule.title} starts in $minutes minute${minutes == 1 ? '' : 's'} at ${schedule.locationName}',
+            tag: notificationId,
+            requireInteraction: requireInteraction,
+          );
           _scheduledNotificationIds.add(notificationId);
-        } else if (timeDifference <= 15 && timeDifference > 5) {
-          _sendReminderNotification(schedule, timeDifference);
-          _scheduledNotificationIds.add(notificationId);
+          
+          print('Sent creation notification for event in $minutes minutes');
         }
       }
-      
-    } catch (error) {
-      print('Notifications: Check failed - $error');
+    } catch (e) {
+      print('Error in immediate notification check: $e');
     }
   }
 
-  /// Modified: Check app setting before sending notification
+  Future<void> _processScheduleForSmartNotification(Schedule schedule, DateTime now) async {
+    final timeDifferenceInSeconds = schedule.eventDate.difference(now).inSeconds;
+    
+    // Only process future events
+    if (timeDifferenceInSeconds <= 0) return;
+    
+    // Check each critical time point
+    for (int thresholdSeconds in _reminderThresholds) {
+      // Calculate difference from threshold (allow 15-second tolerance)
+      final diffFromThreshold = (timeDifferenceInSeconds - thresholdSeconds).abs();
+      
+      // If current time difference is close to a threshold (within 15-second tolerance)
+      if (diffFromThreshold <= 15) {
+        final notificationId = '${schedule.id}_${thresholdSeconds}s';
+        
+        // Check if notification already sent for this threshold
+        if (!_scheduledNotificationIds.contains(notificationId)) {
+          _sendSmartNotification(schedule, timeDifferenceInSeconds, thresholdSeconds);
+          _scheduledNotificationIds.add(notificationId);
+          
+          print('Sent scheduled notification for ${thresholdSeconds}s threshold');
+          break; // Send only one notification at a time to avoid spam
+        }
+      }
+    }
+  }
+
+  // Send notification based on time thresholds 20 minutes, 10 minutes, and 1 minute
+  void _sendSmartNotification(Schedule schedule, int actualSeconds, int thresholdSeconds) {
+    final minutes = (actualSeconds / 60).round();
+    String title;
+    String body;
+    bool requireInteraction;
+    
+    if (thresholdSeconds >= 1200) {
+      // 20-minute reminder
+      title = 'Upcoming Event';
+      body = '${schedule.title} starts in about $minutes minutes at ${schedule.locationName}';
+      requireInteraction = false;
+    } else if (thresholdSeconds >= 600) {
+      // 10-minute reminder
+      title = 'Event Reminder';
+      body = '${schedule.title} starts in $minutes minutes at ${schedule.locationName}. Time to prepare!';
+      requireInteraction = false;
+    } else {
+      // 1-minute reminder (urgent)
+      title = 'Event Starting Soon!';
+      body = '${schedule.title} starts in $minutes minute${minutes == 1 ? '' : 's'} at ${schedule.locationName}';
+      requireInteraction = true;
+    }
+    
+    sendImmediateNotification(
+      title: title,
+      body: body,
+      tag: 'smart_${schedule.id}_${thresholdSeconds}s',
+      requireInteraction: requireInteraction,
+    );
+  }
+
+  void _checkAndSendUpcomingNotifications() async {
+  if (!_notificationPermissionGranted || !_notificationEnabled || !kIsWeb) return;
+
+  final userId = _currentUserId;
+  if (userId == null) return;
+
+  try {
+    final now = DateTime.now();
+    final in21Minutes = now.add(Duration(seconds: 1260)); // 21 minutes with buffer
+    
+    final snapshot = await _schedulesCollection
+        .where('userId', isEqualTo: userId)
+        .where('eventDate', isGreaterThan: Timestamp.fromDate(now))
+        .where('eventDate', isLessThan: Timestamp.fromDate(in21Minutes))
+        .get();
+
+    for (var doc in snapshot.docs) {
+      final schedule = Schedule.fromFirestore(doc);
+      await _processScheduleForSmartNotification(schedule, now); 
+    }
+    
+  } catch (error) {
+    print('Notifications: Check failed - $error');
+  }
+}
+  
+  /// Check app setting before sending notification
   void sendImmediateNotification({
     required String title,
     required String body,
@@ -429,7 +557,7 @@ class FirestoreService {
     }
   }
 
-  /// Modified: Get complete notification status
+  /// Get complete notification status
   Map<String, dynamic> getNotificationStatus() {
     return {
       'platform': kIsWeb ? 'web' : 'mobile',
@@ -443,8 +571,6 @@ class FirestoreService {
       'api_version': 'modern_web_api',
     };
   }
-
-  // EXISTING NOTIFICATION METHODS (mostly unchanged)
 
   bool _isNotificationSupported() {
     if (!kIsWeb) return false;
@@ -490,7 +616,7 @@ class FirestoreService {
 
   void _startNotificationScheduler() {
     _notificationTimer?.cancel();
-    _notificationTimer = Timer.periodic(Duration(minutes: 1), (timer) {
+    _notificationTimer = Timer.periodic(Duration(seconds:15), (timer) {
       _checkAndSendUpcomingNotifications();
     });
     print('Notifications: Scheduler started');
@@ -541,7 +667,7 @@ class FirestoreService {
     stopNotificationScheduler();
   }
 
-  // JS INTEROP METHODS (unchanged)
+  // JS Interop Methods
   
   bool _jsHasNotification() {
     return _hasNotificationAPI();
@@ -609,7 +735,7 @@ class FirestoreService {
   }
 }
 
-// EXTERNAL JS FUNCTIONS (unchanged)
+// External JS functions
 
 @JS('window.Notification')
 external JSObject? get _notification;

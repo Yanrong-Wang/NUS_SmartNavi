@@ -21,7 +21,8 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
   final _locationInput = TextEditingController();
   
   DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
+  TimeOfDay? _selectedStartTime;
+  TimeOfDay? _selectedEndTime;
   Building? _selectedBuilding;
   List<Building> _buildings = [];
 
@@ -41,28 +42,73 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     });
   }
 
-  Future<void> _pickDateTime() async {
-    // Pick Date
+  // Pick date 
+  Future<void> _pickDate() async {
     final DateTime? date = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
-    if (date == null) return;
+    if (date != null && date != _selectedDate) {
+      setState(() {
+        _selectedDate = date;
+      });
+    }
+  }
 
-    // Pick Time
+  // Pick start time
+  Future<void> _pickStartTime() async {
     final TimeOfDay? time = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: _selectedStartTime ?? TimeOfDay.now(),
     );
-    if (!mounted) return; 
-    if (time == null) return;
+    if (time != null && time != _selectedStartTime) {
+      setState(() {
+        _selectedStartTime = time;
+        // If the end time is eearlier than the start time, set it as null
+        if (_selectedEndTime != null) {
+          final startMinutes = _selectedStartTime!.hour * 60 + _selectedStartTime!.minute;
+          final endMinutes = _selectedEndTime!.hour * 60 + _selectedEndTime!.minute;
+          if (endMinutes < startMinutes) {
+            _selectedEndTime = null;
+          }
+        }
+      });
+    }
+  }
 
-    setState(() {
-      _selectedDate = date;
-      _selectedTime = time;
-    });
+  // Pick end time
+  Future<void> _pickEndTime() async {
+    // Ensure start time is selected before picking end time
+    if (_selectedStartTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a start time first.')),
+      );
+      return;
+    }
+
+    final TimeOfDay? time = await showTimePicker(
+      context: context,
+      initialTime: _selectedEndTime ?? _selectedStartTime!,
+    );
+    if (time != null) {
+      // Check if end time is earlier than start time
+      final startMinutes = _selectedStartTime!.hour * 60 + _selectedStartTime!.minute;
+      final endMinutes = time.hour * 60 + time.minute;
+
+      if (endMinutes < startMinutes) {
+        if(mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('End time cannot be earlier than start time.')),
+          );
+        }
+        return;
+      }
+      setState(() {
+        _selectedEndTime = time;
+      });
+    }
   }
 
   void _showSearchPage() {
@@ -94,20 +140,31 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
 
   Future<void> _saveSchedule() async {
     if (_formKey.currentState!.validate()) {
-      if (_selectedDate == null || _selectedTime == null || _selectedBuilding == null) {
+      if (_selectedDate == null || _selectedStartTime == null || _selectedBuilding == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a date, time, and location.')),
+          const SnackBar(content: Text('Please select a date, start time, and location.')),
         );
         return;
       }
-      
-      final eventDateTime = DateTime(
+
+      final startDateTime = DateTime(
         _selectedDate!.year,
         _selectedDate!.month,
         _selectedDate!.day,
-        _selectedTime!.hour,
-        _selectedTime!.minute,
+        _selectedStartTime!.hour,
+        _selectedStartTime!.minute,
       );
+
+      DateTime? endDateTime;
+      if (_selectedEndTime != null) {
+        endDateTime = DateTime(
+          _selectedDate!.year,
+          _selectedDate!.month,
+          _selectedDate!.day,
+          _selectedEndTime!.hour,
+          _selectedEndTime!.minute,
+        );
+      }
 
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
@@ -120,19 +177,21 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       final newSchedule = Schedule(
         id: '', // Firestore will generate ID
         title: _titleInput.text,
-        eventDate: eventDateTime,
-        locationName: _selectedBuilding?.roomName ?? '', // Ensure locationName is not null
-        userId: currentUser.uid, // 添加当前用户ID
+        eventDate: startDateTime,
+        endDate: endDateTime, 
+        locationName: _selectedBuilding?.roomName ?? '', 
+        userId: currentUser.uid, 
       );
       try{
         await _firestoreService.addSchedule(newSchedule);
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error adding schedule: $e')),
-        );
+        if(mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error adding schedule: $e')),
+          );
+        }
         return;
       }
-
       
       if (mounted) {
         context.router.pop();
@@ -151,13 +210,16 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
             children: [
-              TextFormField(
-                controller: _titleInput,
-                decoration: const InputDecoration(
-                  labelText: 'Schedule Title',
-                  border: OutlineInputBorder(),
+              Expanded(
+                child: ListView(
+                  children:[
+                    TextFormField(
+                      controller: _titleInput,
+                      decoration: const InputDecoration(
+                        labelText: 'Schedule Title',
+                        border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -186,34 +248,75 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              // Date and Time Picker
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(4.0),
+              
+              // Seperate pickers for date, start time and end time
+              // Date Picker
+              ListTile(
+                leading: const Icon(Icons.calendar_today_outlined),
+                title: const Text('Date'),
+                subtitle: Text(
+                  _selectedDate == null ? 'Select Date' : DateFormat.yMMMd().format(_selectedDate!),
                 ),
-                child: ListTile(
-                  leading: const Icon(Icons.calendar_today),
-                  title: Text(
-                    _selectedDate == null || _selectedTime == null
-                      ? 'Select Date & Time'
-                      : '${DateFormat.yMMMd().format(_selectedDate!)} at ${DateFormat.jm().format(DateTime(2022, 1, 1, _selectedTime!.hour, _selectedTime!.minute))}',
-                  ),
-                  onTap: _pickDateTime,
-                ),
+                onTap: _pickDate,
+                contentPadding: EdgeInsets.zero,
               ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _saveSchedule,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+              // Start Time Picker
+              ListTile(
+                leading: const Icon(Icons.access_time_outlined),
+                title: const Text('Start Time'),
+                subtitle: Text(
+                  _selectedStartTime == null ? 'Select Start Time' : _selectedStartTime!.format(context),
                 ),
-                child: const Text('Save Schedule'),
-              )
+                onTap: _pickStartTime,
+                contentPadding: EdgeInsets.zero,
+              ),
+              // End Time Picker
+              ListTile(
+                leading: const Icon(Icons.timelapse_outlined),
+                title: const Text('End Time (Optional)'),
+                subtitle: Text(
+                  _selectedEndTime == null ? 'Select End Time' : _selectedEndTime!.format(context),
+                ),
+                onTap: _pickEndTime,
+                enabled: _selectedStartTime != null, // only enable if start time is selected
+                contentPadding: EdgeInsets.zero,
+              ),
             ],
           ),
         ),
+
+        const SizedBox(height: 32), 
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _saveSchedule,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: const Text('Save'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      context.router.pop();
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.grey,
+                      side: const BorderSide(color: Colors.grey),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: const Text('Cancel'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
