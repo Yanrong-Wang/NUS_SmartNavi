@@ -25,11 +25,12 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
   final _locationInput = TextEditingController();
   
   DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
+  TimeOfDay? _selectedStartTime;
+  TimeOfDay? _selectedEndTime;
   Building? _selectedBuilding;
   List<Building> _buildings = [];
   bool _isLoading = true;
-  Schedule? _currentSchedule; // 存储当前加载的schedule
+  Schedule? _currentSchedule;
 
   final FirestoreService _firestoreService = FirestoreService();
 
@@ -40,13 +41,11 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
   }
 
   Future<void> _loadData() async {
-    await Future.wait([
-      _loadBuildingData(),
-      _loadScheduleData(),
-    ]);
-    setState(() {
-      _isLoading = false;
-    });
+    await _loadBuildingData();
+    await _loadScheduleData(); // Now _buildings is guaranteed to be ready.
+  setState(() {
+    _isLoading = false;
+  });
   }
 
   Future<void> _loadBuildingData() async {
@@ -59,11 +58,14 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
     try {
       final schedule = await _firestoreService.getScheduleById(widget.scheduleId);
       if (schedule != null) {
-        _currentSchedule = schedule; // 存储当前schedule
+        _currentSchedule = schedule; // Store the current schedule
         _titleInput.text = schedule.title;
         _locationInput.text = schedule.locationName;
         _selectedDate = schedule.eventDate;
-        _selectedTime = TimeOfDay.fromDateTime(schedule.eventDate);
+        _selectedStartTime = TimeOfDay.fromDateTime(schedule.eventDate);
+        if (schedule.endDate != null) {
+          _selectedEndTime = TimeOfDay.fromDateTime(schedule.endDate!);
+        }
         
         // Find the building based on the location name
         _selectedBuilding = _buildings.firstWhere(
@@ -80,28 +82,62 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
     }
   }
 
-  Future<void> _pickDateTime() async {
-    // Pick Date
+   Future<void> _pickDate() async {
     final DateTime? date = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime.now(),
+      firstDate: DateTime.now().subtract(const Duration(days: 365)), // 允许编辑过去一年的事件
       lastDate: DateTime(2100),
     );
-    if (date == null) return;
+    if (date != null) {
+      setState(() => _selectedDate = date);
+    }
+  }
 
-  // Pick Time
+  Future<void> _pickStartTime() async {
     final TimeOfDay? time = await showTimePicker(
       context: context,
-      initialTime: _selectedTime ?? TimeOfDay.now(),
+      initialTime: _selectedStartTime ?? TimeOfDay.now(),
     );
-    if (!mounted) return; 
-    if (time == null) return;
+    if (time != null) {
+      setState(() {
+        _selectedStartTime = time;
+        if (_selectedEndTime != null) {
+          final startMinutes = time.hour * 60 + time.minute;
+          final endMinutes = _selectedEndTime!.hour * 60 + _selectedEndTime!.minute;
+          if (endMinutes < startMinutes) {
+            _selectedEndTime = null;
+          }
+        }
+      });
+    }
+  }
 
-    setState(() {
-      _selectedDate = date;
-      _selectedTime = time;
-    });
+  Future<void> _pickEndTime() async {
+    if (_selectedStartTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a start time first.')),
+      );
+      return;
+    }
+    final TimeOfDay? time = await showTimePicker(
+      context: context,
+      initialTime: _selectedEndTime ?? _selectedStartTime!,
+    );
+    if (time != null) {
+      final startMinutes = _selectedStartTime!.hour * 60 + _selectedStartTime!.minute;
+      final endMinutes = time.hour * 60 + time.minute;
+
+      if (endMinutes < startMinutes) {
+        if(mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('End time cannot be earlier than start time.')),
+          );
+        }
+        return;
+      }
+      setState(() => _selectedEndTime = time);
+    }
   }
 
   void _showSearchPage() {
@@ -133,42 +169,31 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
 
   Future<void> _updateSchedule() async {
     if (_formKey.currentState!.validate()) {
-      if (_selectedDate == null || _selectedTime == null || _selectedBuilding == null) {
+      if (_selectedDate == null || _selectedStartTime == null || _selectedBuilding == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please select a date, time, and location.')),
         );
         return;
       }
       
-      final eventDateTime = DateTime(
-        _selectedDate!.year,
-        _selectedDate!.month,
-        _selectedDate!.day,
-        _selectedTime!.hour,
-        _selectedTime!.minute,
-      );
-
-      if (_currentSchedule == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error: Schedule data not loaded')),
-        );
-        return;
+      final startDateTime = DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day, _selectedStartTime!.hour, _selectedStartTime!.minute);
+      DateTime? endDateTime;
+      if (_selectedEndTime != null) {
+        endDateTime = DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day, _selectedEndTime!.hour, _selectedEndTime!.minute);
       }
 
       final updatedSchedule = Schedule(
         id: widget.scheduleId,
         title: _titleInput.text,
-        eventDate: eventDateTime,
+        eventDate: startDateTime,
+        endDate: endDateTime,
         locationName: _selectedBuilding!.roomName,
-        userId: _currentSchedule!.userId, // 保持原有的userId
+        userId: _currentSchedule!.userId, 
       );
-
+      
       try {
         await _firestoreService.updateSchedule(updatedSchedule);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Schedule updated successfully!')),
-          );
           context.router.pop();
         }
       } catch (e) {
@@ -180,6 +205,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
       }
     }
   }
+
 
   Future<void> _deleteSchedule() async {
     final bool? confirmDelete = await showDialog<bool>(
@@ -225,7 +251,7 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        appBar: null, body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -243,13 +269,16 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
             children: [
-              TextFormField(
-                controller: _titleInput,
-                decoration: const InputDecoration(
-                  labelText: 'Schedule Title',
-                  border: OutlineInputBorder(),
+              Expanded(
+              child: ListView(
+                children: [
+                  TextFormField(
+                    controller: _titleInput,
+                    decoration: const InputDecoration(
+                      labelText: 'Schedule Title',
+                      border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -277,47 +306,58 @@ class _EditScheduleScreenState extends State<EditScheduleScreen> {
                   return null;
                 },
               ),
+              // Three listtiles for date, start time, and end time
               const SizedBox(height: 16),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-                child: ListTile(
-                  leading: const Icon(Icons.calendar_today),
-                  title: Text(
-                    _selectedDate == null || _selectedTime == null
-                      ? 'Select Date & Time'
-                      : '${DateFormat.yMMMd().format(_selectedDate!)} at ${DateFormat.jm().format(DateTime(2022, 1, 1, _selectedTime!.hour, _selectedTime!.minute))}',
-                  ),
-                  onTap: _pickDateTime,
-                ),
+              ListTile(
+                leading: const Icon(Icons.calendar_today_outlined),
+                title: const Text('Date'),
+                subtitle: Text(_selectedDate == null ? 'Select Date' : DateFormat.yMMMd().format(_selectedDate!)),
+                onTap: _pickDate,
+                contentPadding: EdgeInsets.zero,
               ),
-              const SizedBox(height: 32),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _updateSchedule,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: const Text('Update'),
+              ListTile(
+                leading: const Icon(Icons.access_time_outlined),
+                title: const Text('Start Time'),
+                subtitle: Text(_selectedStartTime == null ? 'Select Start Time' : _selectedStartTime!.format(context)),
+                onTap: _pickStartTime,
+                contentPadding: EdgeInsets.zero,
+              ),
+              ListTile(
+                leading: const Icon(Icons.timelapse_outlined),
+                title: const Text('End Time (Optional)'),
+                subtitle: Text(_selectedEndTime == null ? 'Select End Time' : _selectedEndTime!.format(context)),
+                onTap: _pickEndTime,
+                enabled: _selectedStartTime != null,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 32),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _updateSchedule,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
+                    child: const Text('Update'),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
-                        // Directly exit the edit screen without saving changes
-                        context.router.pop();
-                      },
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.grey,
-                        side: const BorderSide(color: Colors.grey),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: const Text('Cancel'),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      // Directly exit the edit screen without saving changes
+                      context.router.pop();
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.grey,
+                      side: const BorderSide(color: Colors.grey),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: const Text('Cancel'),
                     ),
                   ),
                 ],
