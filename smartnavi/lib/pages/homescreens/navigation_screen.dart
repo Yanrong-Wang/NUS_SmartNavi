@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import '../../services/find_bus.dart';
-import '../../services/arrive_time.dart';
 
 @RoutePage()
 class NavigationScreen extends StatefulWidget {
-  const NavigationScreen({super.key});
+  // Optional parameter to pre-fill the destination station
+  final String? prefilledDestination;
+  
+  const NavigationScreen({super.key, this.prefilledDestination});
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
@@ -29,6 +31,12 @@ class _NavigationScreenState extends State<NavigationScreen> {
   void initState() {
     super.initState();
     _fetchStations();
+    
+    // Pre-fill destination if provided
+    if (widget.prefilledDestination != null) {
+      _endStationController.text = widget.prefilledDestination!;
+      print('DEBUG: Pre-filled destination with: ${widget.prefilledDestination}');
+    }
   }
 
   Future<void> _fetchStations() async {
@@ -124,7 +132,12 @@ class _NavigationScreenState extends State<NavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Route Search'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('Route Search'), 
+        centerTitle: true,
+        // Show back button if this screen was pushed (not in tab navigation)
+        automaticallyImplyLeading: ModalRoute.of(context)?.canPop ?? false,
+      ),
       body: _isFetchingStations
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -292,73 +305,79 @@ class _NavigationScreenState extends State<NavigationScreen> {
                           ),
                         ),
 
-                        // Arrival time display in a more prominent position
-                        if (result.arrivalTime != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12, 
-                              vertical: 8
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.green.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: Colors.green.withValues(alpha: 0.3),
+                        // Time information display
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Waiting time (bus arrival time)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12, 
+                                vertical: 8
                               ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.access_time,
-                                  size: 16,
-                                  color: Colors.green[700],
+                              decoration: BoxDecoration(
+                                color: Colors.green.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Colors.green.withValues(alpha: 0.3),
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${result.arrivalTime} min',
-                                  style: TextStyle(
-                                    fontSize: 14,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.access_time,
+                                    size: 16,
                                     color: Colors.green[700],
-                                    fontWeight: FontWeight.w600,
                                   ),
-                                ),
-                              ],
-                            ),
-                          )
-                        else
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12, 
-                              vertical: 8
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: Colors.grey.withValues(alpha: 0.3),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Waiting Time: ${result.arrivalTime ?? "N/A"} min',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.green[700],
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.schedule,
-                                  size: 16,
-                                  color: Colors.grey[600],
+                            const SizedBox(height: 8),
+                            // Travel time (estimated based on stops)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12, 
+                                vertical: 8
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Colors.blue.withValues(alpha: 0.3),
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'N/A',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.w500,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.timer,
+                                    size: 16,
+                                    color: Colors.blue[700],
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Travel Time: ${(result.stops * 2.5).toStringAsFixed(1)} min',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.blue[700],
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
+                          ],
+                        ),
                       ],
                     ),
                   ],

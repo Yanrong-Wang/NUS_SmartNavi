@@ -46,5 +46,11 @@ class AppRouter extends RootStackRouter {
       page: EditScheduleRoute.page,
       path: '/edit-schedule/:scheduleId',
     ),
+    
+    // Navigation with pre-filled destination (standalone route)
+    AutoRoute(
+      path: "/navigation-with-destination",
+      page: NavigationRoute.page,
+    ),
   ];
 }
