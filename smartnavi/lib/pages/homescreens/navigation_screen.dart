@@ -81,7 +81,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
     if (start.isEmpty || end.isEmpty) {
       setState(() {
-        _errorMessage = 'Please enter both start and end station.';
+        _errorMessage = 'Please enter both start and end point.';
         _isLoading = false;
       });
       return;
@@ -148,7 +148,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   // Start Station Autocomplete Field
                   _buildAutocompleteField(
                     controller: _startStationController,
-                    labelText: 'Start Station',
+                    labelText: 'Start Point',
                     hintText: 'e.g., S17',
                   ),
                   const SizedBox(height: 16),
@@ -156,7 +156,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   // End Station Autocomplete Field
                   _buildAutocompleteField(
                     controller: _endStationController,
-                    labelText: 'End Station',
+                    labelText: 'End Point',
                     hintText: 'e.g., UTown',
                   ),
                   const SizedBox(height: 24),

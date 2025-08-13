@@ -92,7 +92,7 @@ Future<void> addSchedule(Schedule schedule) async {
 
     // 5. Call the check with the complete, correct schedule object
     // Force check immediate notification regardless of cached permission state
-    print('=== FORCE CHECKING IMMEDIATE NOTIFICATION ===');
+    print('CHECKING IMMEDIATE NOTIFICATION FOR NEW SCHEDULE');
     print('Permission granted (cached): $_notificationPermissionGranted');
     print('Notifications enabled (cached): $_notificationEnabled');
     
